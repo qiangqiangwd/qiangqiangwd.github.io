@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>cqq</title>
+</head>
+<style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<!--自写常用函数封装-->
+<script>
+    //手机端用于字体距离的设定（根据手机屏幕的宽度）
+    // (function(doc,win){
+    //     regsitRemSize(doc,win);
+    // })(document,window);
+    //document.documentElement.style.fontSize
+    function regsitRemSize(doc, win) {
+        var docEl = doc.documentElement,
+        //屏幕是否旋转
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+        var recalc = function () {
+            var clientWidth = docEl.clientWidth;
+            if (!clientWidth) return;
+            //clientWidth为获取的当前屏幕宽度
+            //字体大小 = 当前屏幕宽度/你自己设置的基数
+            docEl.style.fontSize = 20 * (clientWidth / 375) + 'px';
+            //因为大部分移动端设计图都是按照iphone6的尺寸来设计的
+            //所以这里我选用375为基数，这样我们做页面时就按照iphone6为基准进行调试
+            //这样设置那么在iphone6上1rem等于20px；当设备宽度大于375时，1rem相对应的值会随着变大，反正缩小。
+            //之所以选择20为基数，是为了解决在中文版chrome上浏览器支持的最小字体为12px的问题。
+            //这两个值并不是固定的值，可以按照自己平时的调试习惯来设置
+        };
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    }
+
+    //该插件依托于jQuery
+    (function (window, undefined) {
+        var
+                arrObj = {} //设定一个对象(type中进行了调用)
+                , elems //设定一个装传入对象的全局变量
+                , cqq
+                , elemObj = {}  //设定一个总的容器，用来装下面函数中产生的变量
+
+        //--------以下为正则表达式部分-------
+                , rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/  //用于筛选出是通过id，tag 或 class来进行节点操作
+                ;
+
+        cqq = function (elem, options) {
+            return new cqq.prototype.init(elem, options);
+        };
+
+        cqq.fn = cqq.prototype = {
+//            v:'1.5',
+            //要执行的对象
+            init: function (elem, options) {
+                elems = elem; //将传入的对象装入一个变量中
+                this.elems = elem;
+                this.v = '1.6';
+            }
+            //该函数的作用为在内部实现参数的传递
+            //p对应的密码，c为传入的参数
+            , getOpts: function (p, c) {
+                var ad;
+                if (c) {
+                    elemObj[p] = c;
+                } else {
+                    ad = elemObj[p];
+                    //当参数被调用后，删除该参数防止堆叠
+                    delete elemObj[p];
+                    return ad
+                }
+                // return c ? elemObj[p] = c : elemObj[p]
+            }
+            //c为传入的需要实现下拉的对象,fun1为click后所进行的操作，fun2为slide里的操作
+            , clickUp: function (c, obj) {
+                var obj = obj || {},
+                        a = obj.fun1,
+                        b = obj.fun2 || '',
+                        t = obj.time || ''
+                        ;
+
+                //测试用
+                this.getOpts('child', {c: c, t: t});
+
+                $(elems).click(function () {
+                    c.slideToggle(t, b);
+                    if (typeof a === 'function') {
+                        a();
+                    }
+                });
+                // console.log(this);
+                return this  //可以进行链式调用
+            }
+            //该函数用于点击时判断是否为其他地方，若是则下拉收回
+            //（other为另外添加的函数，但要注意只有在下拉收缩时才会运行函数）
+            , cSlideUp: function (other) {
+                //c,t分别为获取的收缩对象和收缩时间
+                var suiBianObj = this.getOpts('child'),
+                        c = suiBianObj.c,
+                        t = suiBianObj.t,
+                        f = elems;
+
+                //若父级元素为空时直接退出该函数
+                if (elems.length === 0) {
+                    return
+                }
+
+                //点击空白处时下拉框收回
+                $(document).click(function () {
+                    var e = arguments[0] || window.event;
+                    var event = e.target;
+                    //用于判断点击的是否是下拉栏，不是的话收缩
+                    //第一个参数为固定值（event为当前所点击的元素），f父级元素，c收缩的元素，t收缩的时间（默认为无）
+                    new cSlideUp(event, f, c, t, other);
+                });
+                //创建。。。函数
+                function cSlideUp(e, f, c, t, other) {
+                    //给予最上级的父级元素名字
+                    var t = t || '';
+                    //将父级以下的所有元素进行打包
+                    var cArr = this.selectParent(f);
+                    //对点击的元素进行判断
+                    for (var i = 0; i < cArr.length; i++) {
+                        if (this.clickTF(e, cArr[i])) return;
+                    }
+                    var a = other;
+                    if (typeof a === 'function') {
+                        a();
+                    }
+                    c.slideUp(t);
+                }
+
+                cSlideUp.prototype = {
+                    //该函数用于筛选出父级元素及其以下的所有子元素
+                    selectParent: function (p) {
+                        var arr = [];
+                        var c = p;
+
+                        if (!c.length) {
+                            alert('父级元素有误'); //若传输进来的父级元素有误,不执行下面的编码
+                            return false;
+                        }
+
+                        do {
+                            arr.push(c);//父级元素变成下一级子元素
+                            c = c.children(); //父级元素变成下一级子元素
+                        } while (c.length);
+
+                        return arr;
+                    },
+                    //该函数用于判断点击的是否是该父级元素及其以下的所有子元素，是返回true 不是返回false
+                    clickTF: function (e, t) {
+                        if (!t) return true; //输入的父级元素有误时退出
+
+                        for (var i = 0; i < t.length; i++) {
+                            if (e == $(t)[i]) return true;
+                        }
+
+                        return false;
+                    }
+                };
+            }
+            //倒计时的函数（一般用于点击后进行倒计时）
+            //obj:要进行倒计时的元素
+            //options = {num1：总的倒计时时间，num2：每次倒计时间，num3：倒计时的最小值，fun：添加的函数}
+            , delNum: function (options) {
+//                var elems = elems;
+
+                var num1 = Number(options.num1) || 60,
+                        num2 = Number(options.num2) || 1000,
+                        num3 = Number(options.num3) || 0, //倒计时到什么时间停止
+                        str = options.str || '',  //参数后面添加的内容
+                        str1 = options.str1 || '', //参数前面添加的内容
+                        num = Number(options.num) || 1, //每次减少的个数
+                        delNumFlag = (typeof options.delNumFlag === 'boolean') ? options.delNumFlag : false //判断是否进行秒数换算
+                        , h, min, s;
+//                console.log();
+                var e = this.elems;
+                if (e.attr('delNum') !== 'doing') {
+                    e.attr('delNum', 'doing');//生成标识，表示正在进行倒计时中，防止重复点击
+                    var underNum = setInterval(function () {
+                        if (delNumFlag) {
+                            //当大于1小时时
+                            if (num1 >= 3600) {
+                                h = Math.floor(num1 / 3600);
+                                min = Math.floor(num1 % 3600 / 60);
+                                s = num1 % 3600 % 60;
+                                e.html(str1 + h + '小时' + (min >= 10 ? min : '0' + min) + '分钟' + (s >= 10 ? s : '0' + s) + '秒' + str);
+
+                            } else if (num1 >= 60) {   //当小于1小时，大于1分钟时
+                                min = Math.floor(num1 / 60);
+                                s = num1 % 60;
+                                e.html(str1 + (min >= 10 ? min : '0' + min) + '分钟' + (s >= 10 ? s : '0' + s) + '秒' + str);
+
+                            } else {      //当小于1分钟时
+                                e.html(str1 + (num1 >= 10 ? num1 : '0' + num1) + '秒' + str);
+                            }
+                        } else {
+                            e.html(str1 + num1 + str);
+                        }
+                        num1 -= num; //自减
+                        if (num1 < num3) {
+                            if (!!options.fun) {
+                                options.fun();
+                            }
+                            e.attr('delNum', 'stop');//生成标识，表示倒计时结束，可以再次点击
+                            clearInterval(underNum);
+                        }
+                    }, num2)
+                }
+            }
+        };
+
+        //可以通过extend 进行函数的拓展
+        cqq.extend = cqq.fn.extend = function () {
+            var src, name, copy,
+                    event = arguments[0] || {},   //获取到添加的内容（以对象的形式）
+                    deep = false,    //是否进行深度递归
+                    i = 1,
+                    length = arguments.length   // 传入参数的数量
+                    ;
+
+            for (name in event) {
+                this[name] = event[name];
+            }
+
+//             以下为拓展的加深版本（未完成）
+//            //若传进来的第一个参数为boolean类型，根据其传的值判断是否要进行深度递归
+//            if(typeof event === 'boolean'){
+//                deep = event;
+//                event = arguments[1] || {};
+//                i = 2;
+//            }
+//
+//            //若传进来的参数是字符串或其他
+//            if(typeof event !== 'object' && typeof event !== 'function'){
+//                event = {};
+//            }
+//
+//            if(length === i){
+//                event = this;  // 这里的this在cq和 cq.fn的情况下指向不相同
+//                --i;
+//            }
+//
+//            for(;i < length;i++){
+//
+//            }
+
+        };
+
+        //利用extend新添加的函数功能
+        cqq.extend({
+            //建立判断的表单（type函数的）
+            addObj: function () {
+                var i = 0;
+                //用数组将一系列字符串装起来
+                var addArr = "Boolean Number String Function Array Date RegExp Object Error".split(' ');
+                for (; i < addArr.length; i++) {
+                    arrObj['[object ' + addArr[i] + ']'] = addArr[i].toLowerCase(); //toLowerCase(),js自带的将大写换算成小写的函数
+                }
+            }
+            ,type: function (obj) {
+                this.addObj();
+
+                if (obj === null) {
+                    return 'null'
+                }
+
+                // console.log(Object.prototype.toString.call(obj));
+                return typeof obj === 'object' || typeof obj === 'function' ?
+                        arrObj[Object.prototype.toString.call(obj)] :  //Object.prototype.toString.call()为兼容ie的写法
+                        typeof obj
+            }
+
+            //判断输入的两个值是否一样（全等，类型也必须一致）
+            ,kcheckStr: function (p1, p2) {
+                if (p1 === p2) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+
+            //匹配字符串中所有的想要替换的字符或数字(默认空格)，并将其置换成自己想要的字符串（默认为空）
+            //str:总的字符串,reStr:想要替换的字符串,seStr：寻找的字符或数字
+            , replaceStr: function (str, reStr, seStr) {
+                if (typeof seStr === 'string' || typeof seStr === 'number') {
+                    eval("var re = /" + seStr + "/" + "ig" + ";");
+                } else {
+                    var re = /\s/ig
+                }
+                return str.replace(re, reStr);
+            }
+
+            //js填写银行卡号，每隔4位数字加一个空格
+            , bankCard: function (elem) {
+                elem.keyup(function() {
+                    var v = this.value;
+                    if (/\S{5}/.test(v)) {
+                        this.value = v.replace(/\s/g, '').replace(/(.{4})/g, "$1 ");
+                    }
+                });
+            }
+
+            //将后台返回的时间进行换算
+            // 若返回的为"/Date(1493018780503)/"类型就将其转换为
+            // 若返回的为"2017/04/24 15:26:20"类型，则直接返回参数
+            //注：可以选择返回距 1970 年 1 月 1 日之间的毫秒数用来计算两个时间的毫秒数差值
+            , timeCount: function (cellval, opts) {
+                if (typeof cellval !== 'string') {
+                    console.log('timeCount函数输入参数错误！');
+                    return
+                }
+
+                var opts = opts || {};  //对返回的参数进行设定
+                var LinkType = opts.LinkType || '/'  //（年月日）链接的类型（默认为/）
+                        , returnType = opts.returnType || 'date'   //返回参数的类型(默认为date，即"2017/04/24 15:26:20"类型)
+                        ;
+                var date;
+                var dateCnt = {};
+
+                //判断参数的类型
+                if (cellval.match("/Date")) {
+                    date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                } else {
+                    date = new Date(cellval);
+                }
+
+                //将date类型进行换算
+                dateCnt.getTime = date.getTime(); //获取距 1970 年 1 月 1 日之间的毫秒数。
+                dateCnt.year = date.getFullYear();// 年
+                dateCnt.month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;//月
+                dateCnt.day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();//日
+                dateCnt.hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();//时
+                dateCnt.minute = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(); //分钟
+                dateCnt.second = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds(); //秒
+                dateCnt.date = dateCnt.year + LinkType + dateCnt.month + LinkType + dateCnt.day + ' ' + dateCnt.hour + ':' + dateCnt.minute + ':' + dateCnt.second;
+
+                return dateCnt[returnType]
+            }
+
+            //计算两个时间之间的时间差
+            //默认返回相差的秒值
+            , differTime: function (cellval, opts) {
+                //对输入的参数进行判断
+                if (cqq.type(cellval) !== 'array') {
+                    console.log('differTime函数输入参数错误！');
+                    return
+                }
+                var opts = opts || 's';
+                var differTime = 0; //相差的毫秒数
+
+                //值获取前两个参数并将其换算成对应的值
+                var num1 = cqq.timeCount(cellval[0], {returnType: 'getTime'});
+                var num2 = cqq.timeCount(cellval[1], {returnType: 'getTime'});
+                //判断两者大小，使differTime始终大于0
+                differTime = num1 > num2 ? num1 - num2 : num2 - num1;
+
+                var returnArguments = ''; //返回的值
+                var timeStr = 's_min_h'.split('_'),  //参数设定
+//                        timeArr = '秒_分钟_小时_天'.split('_'),
+                        timeNum = [
+                            Math.ceil(differTime / 1000),   //返回秒数时为直接的数字
+                            Math.floor(Math.ceil(differTime / 1000) / 60) + '分钟' + Math.ceil(differTime / 1000) % 60 + '秒',
+                            Math.floor(Math.ceil(differTime / 1000) / 3600) + '小时' + Math.floor(Math.ceil(differTime / 1000) % 3600 / 60) + '分钟' + Math.ceil(differTime / 1000) % 3600 % 60 + '秒'
+                        ]
+                        ;
+                for (var j = 0; j < timeStr.length; j++) {
+                    if (opts === timeStr[j]) {
+                        returnArguments = timeNum[j];
+                        return returnArguments
+                    }
+                }
+            }
+
+            //验证不为空 notnull
+            //为空返回true，不为空返回false
+            , isNull: function (str) {
+                str = $.trim(str);
+                if (str.length == 0 || str == null || str == undefined) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            //获取url传递参数（?后面的参数，以对象的形式返回）
+            , getRequest: function () {
+                var url = location.search; //获取url中"?"符后的字串
+                var theRequest = new Object();
+                if (url.indexOf("?") != -1) {
+                    var str = url.substr(1);
+                    strs = str.split("&");
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split("=")[0]] = (strs[i].split("=")[1]);
+                    }
+                }
+                return theRequest
+            }
+
+            //使元素垂直水平居中（兼容ie的写法）
+            , makeItMiddle: function () {
+                $('.makeItMiddle').each(function () {
+                    //最外层的css
+                    var lastDiv = 'width:100%;height:100%;display: table;*position: relative;overflow: hidden;margin: 0 auto;';
+                    //次级层的css
+                    var secondDiv = 'vertical-align: middle;display: table-cell;text-align: center;*position: absolute;*top: 50%;*left: 50%;';
+                    //本身的css
+                    var elemDiv = 'display: inline-block;*display: inline;zoom: 1;*position: relative;*top: -50%;*left: -50%;';
+                    $(this).wrap('<div style="' + lastDiv + '"><div style="' + secondDiv + '"></div></div>')
+                            .attr('style', elemDiv);
+                });
+            }
+
+            //图片上传及及时预览
+            //对于 Chrome、Firefox、IE10 使用 FileReader 来实现
+            //对于 IE8~9 使用滤镜 filter:progid:DXImageTransform.Microsoft.AlphaImageLoader 来实现。
+            //在IE8~9的情况下不能通过上传base64的形式上传图片
+
+            //暂时不考虑兼容性问题
+            , imgPreview: function (file, elem) {
+                if (file.files && file.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (evt) {
+                        elem.append('<img src="' + evt.target.result + '" />');
+                    };
+                    reader.readAsDataURL(file.files[0]);
+                }
+//                else {
+//                    elem.html('<div class="img" ' +
+//                            'style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'">' +
+//                            '</div>');
+//                }
+            }
+
+            //根据概率生成对应的值
+            ,radomNum : function(options){
+                var allNum = options.num || 1000;  //将所有数量分为若干等分，每次随机出来的数都在其中的概率
+                var radomNum = Math.random() * allNum;//生成的随机数
+                var i;
+                var arrNum = [options.prob, options.event];//概率和概率对应的事件组成的数组
+                var sumNum = 0; //所有概率相加总和，若不等于一则按比例换算成概率
+
+                for (i = 0; i < arrNum[0].length; i++) {
+                    sumNum += arrNum[0][i];
+                }
+
+                //若所有概率相加不等于1时
+                if (sumNum !== 1) {
+                    for (i = 0; i < arrNum[0].length; i++) {
+                        arrNum[0][i] = arrNum[0][i] / sumNum;
+                    }
+                }
+
+                var mNum1 = 0;
+                var allNum2 = options.num || 1000;
+                //循环和随机数进行大小判断
+                for (i = 0; i < arrNum[0].length; i++) {
+                    allNum = allNum - arrNum[0][i] * allNum2;
+                    if (i == 0 && radomNum >= allNum) {
+                        return arrNum[1][0];
+                    } else if (i == (arrNum[0].length - 1) && radomNum < allNum) {
+                        return arrNum[1][arrNum[0].length - 1];
+                    } else if (radomNum >= allNum && radomNum < mNum1) {
+                        return arrNum[1][i];
+                    }
+                    mNum1 = allNum;
+                }
+            }
+
+            //冒泡排序法
+            ,maopao : function(arra,jF){
+                var temp,i,j,temp1;
+                var arrNum = [];
+                for(i = 0;i<arra.length;i++){
+                    arrNum[i] = i;
+                }
+                var judgeFlag = jF || true; //排序的方式，true：a-z或数字小到大（默认）,false:z-a或数字大到小
+                for(i=0;i<arra.length;i++){ //比较多少趟，从第一趟开始
+                    for(j=0;j<arra.length-i-1;j++){ //每一趟比较多少次数
+                        if(judgeFlag ? arra[j]>arra[j+1] : arra[j]<arra[j+1]){
+                            temp=arra[j];
+                            arra[j]=arra[j+1];
+                            arra[j+1]=temp;
+
+                            //对改变的顺序记录下来
+                            temp1=arrNum[j];
+                            arrNum[j]=arrNum[j+1];
+                            arrNum[j+1] = temp1;
+                        }
+                    }
+                }
+                return [arra,arrNum];//返回改变后的值和改变的顺序
+            }
+
+            //大小或顺序排序函数
+            ,sortDrder : function(options){
+            var i;
+            var fElem = options.fElem;
+            var arr = options.contentArr;
+            var orderFlag = options.orderFlag || true; //排序的方式，true：a-z或数字小到大（默认）,false:z-a或数字大到小
+            //进行比较并获取返回的值和对调后的顺序
+            var returnArr = this.maopao(arr,orderFlag);
+
+            //将原来的内容进行保存
+            var fElemCopy = [];
+            for(i=0;true;i++){
+                if(i<arr.length){
+                    fElemCopy[i] = fElem.eq(i).html();
+                }else{
+                    if(i<(2*arr.length)){
+                        //按指定的顺序进行排列
+                        fElem.eq(i - arr.length).html(fElemCopy[returnArr[1][i - arr.length]]);
+                    }else{
+                        break;
+                    }
+                }
+            }
+        }
+        });
+
+        cqq.fn.init.prototype = cqq.fn;
+        window.cqq = window.cq = cqq; //暴露接口
+    })(window);
+</script>
+<!--cqq.makeItMiddle:调用使元素垂直水平居中的函数-->
+<body style="padding: 30px;" onload="cqq.makeItMiddle();">
+<style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: "microsoft yahei", "SimSun", "宋体", "Arial Narrow";
+        color: #333333;
+        font-size: 14px;
+    }
+
+    h3 {
+        margin-top: 30px;
+        color: #474767;
+        font-size: 16px;
+    }
+
+    input {
+        margin-top: 20px;
+    }
+
+    /*input[type="text"]{*/
+    /*padding: 5px 10px!important;*/
+    /*}*/
+</style>
+<div style="min-width: 900px;">
+    <!--==================1111111=====================-->
+    <h3>1、需要实现下拉的对象(点击其他地方时收回)cqq(f).clickUp(c,obj).cSlideUp(fun):</h3>
+    <style type="text/css">
+        #mySelect {
+            width: 20%;
+            text-align: center;
+            /*padding: 10px;*/
+            border: 1px solid #cccccc;
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        #mySelect > p {
+            padding: 10px;
+        }
+
+        #mySelect > ul {
+            display: none;
+            position: absolute;
+            width: 100%;
+            top: 100%;
+            left: -1px;
+            border: 1px solid #cccccc;
+            background-color: #ffffff;
+        }
+
+        #mySelect > ul > li {
+            list-style-type: none;
+            padding: 10px;
+        }
+
+        #mySelect > ul > li:hover {
+            background-color: #333333;
+            color: #fff;
+        }
+
+        .attention {
+            margin-top: -15px;
+            color: #d44343;
+        }
+    </style>
+    <div id="mySelect">
+        <p>
+            下拉框内容:<span id="showCnt" val="1">全部</span>
+        </p>
+        <ul>
+            <li val="1">全部</li>
+            <li val="2">诸葛亮</li>
+            <li val="3">望见谅</li>
+            <li val="4">马云</li>
+            <li val="5">cqq</li>
+        </ul>
+    </div>
+    <select style="width: 20%;margin-top: 10px;">
+        <option value="">全部</option>
+        <option value="">诸葛亮</option>
+        <option value="">马云</option>
+        <option value="">cqq</option>
+    </select>
+    <script>
+        //c为传入的需要实现下拉的对象,fun1为click后所进行的操作，fun2为slide里的操作
+        var f = $('#mySelect'),  //父级节点
+                c = $('#mySelect>ul')  //要进行下拉的节点
+                ;
+        cqq(f).clickUp(c, {
+            fun1: function () {
+                c.children('li').each(function () {
+                    $(this).click(function () {
+                        $('#showCnt').html($(this).text()).attr('val', $(this).attr('val'));
+                    });
+                });
+            },
+            time: 250
+            //（other为另外添加的函数，但要注意只有在下拉收缩时才会运行函数）
+        }).cSlideUp();
+
+    </script>
+    <p style="padding: 20px 10px;line-height: 20px;">
+        输入参数说明：<br>
+        cqq(f):f-输入点击的父级元素（最外层的元素）<br>
+        clickUp(c,obj):c-需要实现下拉的元素<br>
+        obj：{<br>
+        &nbsp;fun1:为click后所进行的操作<br>
+        &nbsp;fun2:为slide里的操作<br>
+        &nbsp;time:收缩所需要的时间(默认为无)<br>
+        }<br>
+        cSlideUp(fun):fun为另外添加的函数，但要注意只有在下拉收缩时才会运行函数
+    </p>
+    <h4 class="attention" style="margin-top: -15px;">注：该函数未添加点击赋值的操作,需另外操作</h4>
+    <!--==================2222222=====================-->
+    <h3>2、倒计时cqq(elems).delNum(opts):</h3>
+    num:<input type="text" id="delNumNum" value="1" placeholder="每次倒计时所减时间(s)" style="padding: 10px;">
+    num1:<input type="text" id="delNumNum1" value="110" placeholder="总的倒计时时间(s)" style="padding: 10px;">
+    num2:<input type="text" id="delNumNum2" value="1000" placeholder="多久进行一次倒计时(ms)" style="padding: 10px;"><br>
+    num3:<input type="text" id="delNumNum3" value="0" placeholder="倒计时到什么时间停止(s)" style="padding: 10px;">
+    str1:<input type="text" id="delNumStr1" value="第<span style='color:red;'>" placeholder="参数前面添加的内容"
+                style="padding: 10px;width: 184px;">
+    str:<input type="text" id="delNumStr" value="</span>秒" placeholder="参数后面添加的内容" style="padding: 10px;"><br>
+    <input type="button" id="delNumStart" maxlength="5" value="倒计时开始" style="padding: 10px;">
+    <div style="width: 120px;height: 50px;border: 1px solid;margin-top: 20px;margin-right: 10px;float: left;">
+        <div class="delNum1 makeItMiddle">开始倒计时</div>
+    </div>
+    <input type="button" id="delNumStartYes" maxlength="5" value="倒计时开始(进行秒数换算)" style="padding: 10px;">
+    <div style="width: 170px;height: 50px;border: 1px solid;margin-top: 20px;margin-right: 10px;float: left;">
+        <div class="delNum2 makeItMiddle">开始秒数换算倒计时</div>
+    </div>
+
+    <script>
+        //num1：总的倒计时时间，num2：每次倒计时间，num3：倒计时的最小值，fun：添加的函数
+        $('#delNumStart').click(function () {
+            cqq($('.delNum1').eq(0)).delNum({
+                num2: $('#delNumNum2').val(),   //ms
+                num1: $('#delNumNum1').val(),   //s
+                num: $('#delNumNum').val(),
+                num3: $('#delNumNum3').val(),
+                str1: $('#delNumStr1').val(),
+                str: $('#delNumStr').val(),
+                fun: function () {
+                    $('.delNum1').eq(0).html('倒计时结束');
+                }
+            });
+        });
+        $('#delNumStartYes').click(function () {
+            cqq($('.delNum2').eq(0)).delNum({
+                num2: $('#delNumNum2').val(),   //ms
+                num1: $('#delNumNum1').val(),   //s
+                num: $('#delNumNum').val(),
+                num3: $('#delNumNum3').val(),
+                str1: $('#delNumStr1').val(),
+                str: $('#delNumStr').val(),
+                delNumFlag: true,
+                fun: function () {
+                    $('.delNum2').eq(0).html('倒计时结束');
+                }
+            });
+        });
+    </script>
+    <p style="padding: 20px 10px;line-height: 20px;">
+        输入参数说明：<br>
+        cqq(elems):elems-输入点击的元素<br>
+        opts：<br>
+        {<br>
+        &nbsp;&nbsp;num：每次倒计时所减时间(默认1s)//单位：s,<br>
+        &nbsp;&nbsp;num1：总的倒计时时间(默认60s)//单位：s,<br>
+        &nbsp;&nbsp;num2：多久进行一次倒计时(默认1s)//单位：ms,<br>
+        &nbsp;&nbsp;num3：倒计时到什么时间停止(默认0)//单位：s,<br>
+        &nbsp;&nbsp;str：//参数后面添加的内容(默认空),<br>
+        &nbsp;&nbsp;str1：//参数前面添加的内容(默认空),<br>
+        &nbsp;&nbsp;delNumFlag：//判断是否进行秒数换算(默认false),<br>
+        <!--&nbsp;&nbsp;num3：倒计时的最小值,<br>-->
+        &nbsp;&nbsp;fun：倒计时完成后进行的函数,<br>
+        }<br>
+    </p>
+    <h4 class="attention" style="margin-top: -15px;">注：delNumFlag必须为boolean类型，秒数换算最大只支持换算到小时</h4>
+
+
+    <!--==================33333=====================-->
+    <h3>3、js填写银行卡号，每隔4位数字加一个空格:cqq.bankCard(elem)</h3>
+    <input type="text" id="bankCard" maxlength="23" placeholder="输入银行卡号" style="padding: 10px;">
+    <script>
+        //
+        <!--输入id值-->
+        (function () {
+            cqq.bankCard($('#bankCard'));
+
+//            function bankCard(elem) {
+//                document.getElementById('bankCard').onkeyup = function (event) {
+//                    var v = this.value;
+//                    if (/\S{5}/.test(v)) {
+//                        this.value = v.replace(/\s/g, '').replace(/(.{4})/g, "$1 ");
+//                    }
+//                };
+//            }
+        })();
+    </script>
+    <p class="" style="padding: 20px 10px;line-height: 20px;">
+        输入参数说明：<br>
+        elem : 输入的元素 //$(元素)的形式
+    </p>
+
+    <!--==================444444=====================-->
+    <h3>4、匹配字符串中所有的想要替换的字符或数字(默认空格)，并将其置换成自己想要的字符串（默认为空）:cqq.replaceStr(str,reStr,seStr)</h3>
+    <input type="text" id="allStr" maxlength="19" placeholder="总的字符串" style="padding: 10px;">
+    <input type="text" id="replaceStr" maxlength="19" placeholder="输入替换的字符或数字" style="padding: 10px;">
+    <input type="text" id="searchStr" maxlength="19" placeholder="寻找要替换的字符或数字" style="padding: 10px;">
+    <input type="button" id="bankCardOut" maxlength="19" value="弹出替换后的字符串" style="padding: 10px;">
+    <p style="padding: 20px 10px;">
+        输入参数（按照输入的顺序）：<br>
+        str:总的字符串(必须为字符串的形式)<br>
+        reStr:想要替换的字符串或数字（默认为空）<br>
+        seStr：寻找的字符或数字(默认空格)
+    </p>
+    <script>
+        $('#bankCardOut').click(function () {
+            var seStr = false;
+            if ($('#searchStr').val() !== '') {
+                seStr = $('#searchStr').val();
+            }
+            alert(cqq.replaceStr($('#allStr').val(), $('#replaceStr').val(), seStr));
+        });
+    </script>
+
+    <!--==================55555=====================-->
+    <h3>5、将后台返回的时间进行换算（默认返回"2017/04/24 15:26:20"类型）:cqq.timeCount(cellval,obj)</h3>
+    值：<input type="text" id="dateTime" value="/Date(1493018780503)/" placeholder="输入时间" style="padding: 10px;">
+    参数:<input type="text" id="dateType" value="{LinkType:'-',returnType:'date'}" placeholder="输入参数"
+              style="padding: 10px;width: 200px">
+    <input type="button" id="dateTimeOut" maxlength="19" value="返回值" style="padding: 10px;">
+    <p style="padding: 20px 10px;">
+        返回的参数：<br>
+        LinkType : '/' //（年月日）链接的类型（默认为/）。<br>
+        returnType : date //返回"2017/04/24 15:26:20"类型(默认)。<br>
+        returnType : getTime //获取距 1970 年 1 月 1 日之间的毫秒数。<br>
+        returnType : year,month,day,hour,minute,second //返回年,月，日，时，分，秒
+    </p>
+    <script>
+        $('#dateTimeOut').click(function () {
+            if ($('#dateType').val() !== '') {
+                alert(cqq.timeCount($('#dateTime').val(), eval("(" + $('#dateType').val() + ")")));
+            } else {
+                alert(cqq.timeCount($('#dateTime').val()));
+            }
+        });
+    </script>
+
+    <!--==================6666=====================-->
+    <h3>6、计算两个时间之间的时间差（默认返回相差秒数）:cqq.differTime([cellval1,cellval2],str)</h3>
+    cellval1:<input type="text" id="datedifferTime1" value="2017/04/24 15:26:59" placeholder="输入时间1"
+                    style="padding: 10px;">
+    cellval2:<input type="text" id="datedifferTime2" value="/Date(1493018780503)/" placeholder="输入时间2"
+                    style="padding: 10px;width: 200px">
+    参数:<input type="text" id="datedifferOpts" value="min" placeholder="输入参数" style="padding: 10px;width: 200px">
+    <input type="button" id="datedifferTimeOut" maxlength="19" value="返回值" style="padding: 10px;"><br>
+    <p style="padding: 20px 10px;">
+        返回的参数(直接写入参数，非对象的形式)：<br>
+        str : 's' //返回秒数时为直接的数字(默认)。<br>
+        str : 'min' //返回 x分钟x秒。<br>
+        str : 'h' //返回 x小时x分钟x秒。<br>
+    </p>
+    <script>
+        $('#datedifferTimeOut').click(function () {
+            if ($('#datedifferOpts').val() !== '') {
+                alert(cqq.differTime([$('#datedifferTime1').val(), $('#datedifferTime2').val()], $('#datedifferOpts').val()));
+            } else {
+                alert(cqq.differTime([$('#datedifferTime1').val(), $('#datedifferTime2').val()]));
+            }
+        });
+    </script>
+
+    <!--==================7777=====================-->
+    <h3>7、判断类型:cqq.type(str)[]</h3>
+    <p style="padding: 20px 10px;">
+        返回的参数(直接写入参数，非对象的形式)：<br>
+        str : 想要判断的数据 //该方法可以避免typeof null等bug，并且是直接返回其类型(小写的形式)。<br>
+    </p>
+
+    <!--==================8888=====================-->
+    <h3>8、验证不为空:cqq.isNull(str)</h3>
+    <p style="padding: 20px 10px;">
+        返回的参数(直接写入参数，非对象的形式)：<br>
+        str : 想要判断的数据 //为空返回true，不为空返回false。<br>
+    </p>
+
+    <!--==================9999=====================-->
+    <h3>9、获取url传递参数（?后面的参数，以对象的形式返回）:cqq.getRequest()</h3>
+    <input type="button" id="getRequest" maxlength="19" value="获取本地url后面的值" style="padding: 10px;">
+    <script>
+        $(function () {
+            if (JSON.stringify(cqq.getRequest()) === '{}') {
+                location.href = location.href + '?str=12345566&str2=sgsfgssfdsf';
+            }
+        });
+        $('#getRequest').click(function () {
+            alert(JSON.stringify(cqq.getRequest()));
+        });
+    </script>
+
+    <!--==================10101010=====================-->
+    <h3>10、使元素垂直水平居中（兼容ie的写法）:cqq.makeItMiddle()</h3>
+    <!--<style>-->
+    <!--.makeItMiddle{-->
+    <!--display: inline-block!important;-->
+    <!--zoom: 1;-->
+    <!--}-->
+    <!--</style>-->
+    <div style="width: 305px;height: 110px;border: 1px solid;float: left;margin-top: 20px;font-size: 12px;">
+        示例代码：<br>
+        &lt;body onload="cqq.makeItMiddle();"&gt;<br>
+        &nbsp;&lt;div style="width: 300px;height: 100px;"&gt; 父级元素<br>
+        &nbsp;&nbsp;&nbsp;&lt;div class='makeItMiddle'&gt;垂直居中的元素&lt;/div&gt;<br>
+        &nbsp;&lt;/div&gt;<br>
+        &lt;/body&gt;
+    </div>
+    <div style="width: 250px;height: 110px;border: 1px solid;float: left;margin-top: 20px;">
+        <span class="makeItMiddle">这是一个垂直居中的span元素</span>
+    </div>
+    <div style="width: 250px;height: 110px;border: 1px solid;float: left;margin-top: 20px;">
+        <div class="makeItMiddle">这是一个垂直居中的div元素</div>
+    </div>
+    <div style="width: 250px;height: 110px;border: 1px solid;float: left;margin-top: 20px;">
+        <div>
+            <div>
+                <div>515156</div>
+            </div>
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+    <h4 class="attention" style="padding: 20px 10px;">
+        注:<br>
+        1、该方法需要在body中进行函数的引用&lt;body onload="cqq.makeItMiddle();"&gt;<br>
+        2、再给需要垂直居中的元素添加class='makeItMiddle'
+    </h4>
+
+    <!--==================11 11 11 11 11=====================-->
+    <h3>11、js图片上传前预览功能:imgPreview(e,obj)【待升级】</h3>
+    <style type="text/css">
+        #previewBox{
+            padding: 10px;
+            overflow: hidden;
+        }
+        #previewBox li{
+            width: 100px;
+            height: 100px;
+            list-style-type: none;
+            float: left;
+            margin: 0 10px;
+            position: relative;
+        }
+        #previewBox li:hover span{
+            display: block;
+        }
+        #previewBox li img{
+            width: 100%;
+            height: 100%;
+        }
+        #previewBox li span{
+            position: absolute;
+            display: none;
+            width: 100%;
+            padding: 5px 0;
+            background: rgba(171, 37, 37, 0.5);
+            color: #fff;
+            text-align: center;
+            bottom: 0;
+            cursor: pointer;
+        }
+    </style>
+    <ul id="previewBox">
+        <li>5</li>
+        <!--<li></li>-->
+    </ul>
+    <input type="button" id="imgPreviewBtn" value="上传图片" style="padding: 5px 10px;"/>
+    <div id="dddd">
+        <input type="file" onchange="setImg(this,$('#dddd'))">
+    </div>
+
+    <script>
+        $('#previewBox').click(function () {
+            console.log($('#previewBox'));
+            try{
+                console.log(d);
+            }catch(e){
+                console.log(e.message);
+//                window.location.href =
+//                        "http://stackoverflow.com/search?q=[js]+"+e.message;
+            }
+//            imgPreview($('#previewBox'),{
+//                imgNum : 3,
+//                imgNumFun : function(i){
+//                    alert('最大上传'+i+'张图片');
+////                    console.log(i);
+//                },
+//                isImgFun : function(){
+//                    console.log(this);
+//                    alert('上传图片格式不正确');
+//                },
+//                cycleHtml : '<li class="cycleF"><img /><span class="deleteBtn">删除</span></li>'
+////                returnFun : function(i){}
+//            });
+        });
+
+        function imgPreview(cElem,opt) {
+            var fElem = cElem.find('input[type=file]'); //查探是否包含input[type=file]标签
+            var opts = opt || {};
+            var moreFile = opts.moreFile || false;  //是否每张图片对应一个文件域（默认false）
+            var imgNum = Number(opts.imgNum) || 1;  //允许上传的最大图片数量（默认1张）
+            var imgNumFun = opts.imgNumFun || false;  //当超过允许上传的最大图片数量时进行的函数操作
+            var isImgFun = opts.isImgFun || false;  //当上传的不是图片时进行的函数操作
+            var cycleHtml = opts.cycleHtml || '<img />';  //循环生成的图片外所包裹的标签（当没有时直接生成img标签）
+            var deleteBtn = opts.deleteBtn || false; //是否开启删除按钮（默认无）
+
+            if(!fElem.length || moreFile){
+                cElem.append('<input type="file" style="display:none;" />');
+//                fElem = cElem.children('input[type=file]');
+                var aElem = fElem.eq(fElem.length - 1).parent(); //============>
+
+                fElem.eq(fElem.length - 1).change(function(){
+                    var file = this;
+                    var flag = (/\.jpg$|\.jpeg$|\.gif$|\.png$|\.bmp$/i).test(file.value) ; //上传格式判断
+
+                    if(flag){
+                        //采用fileReader将文件生成base64的格式
+                        if (file.files && file .files[0]) {
+                            var reader = new FileReader();
+                            //console.log(file.files[0].size);//上传文件大小
+
+                            reader.onload = function (evt) {
+                                aElem.append(cycleHtml);//============>循环添加图片的地方
+                                cElem.find('img').eq(cElem.find('img').length - 1).attr('src',evt.target.result);
+                                cElem.find('.deleteBtn').eq(cElem.find('img').length - 1).click(function(){
+                                   $(this).parents('.cycleF').remove();
+//                                    if(moreFile){
+//                                        console.log($(this).parents('.cycleF'));
+//                                    }
+                                });
+                            };
+                            reader.readAsDataURL(file.files[0]);
+                        }
+                    }else if(!!this.value){ //判断上传文件的格式并且不是在点击了取消的情况下（即未选择文件）
+                        typeof isImgFun === "function" && isImgFun();
+                    }
+                });
+            }
+
+            //上传数量限制
+            if(cElem.find('img').length >= imgNum){
+                typeof imgNumFun === "function" && imgNumFun(imgNum);//返回最大的图片数量
+                return
+            }
+
+            fElem.eq(fElem.length - 1).click();
+        }
+
+        function setImg(file,cElem){
+            var flag = (/\.jpg$|\.jpeg$|\.gif$|\.png$|\.bmp$/i).test(file.value); //判断上传是否为图片
+            if(flag){
+                if (file.files && file.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (evt) {
+                        cElem.append('<img src="' + evt.target.result + '" />');
+                    };
+                    reader.readAsDataURL(file.files[0]);
+                }
+            }else if(!!this.value){
+                alert('请上传图片！');
+            }
+        }
+    </script>
+    <p style="padding: 20px 10px;">
+        参数设定：<br>
+        e : 循环图片的最外层, <br>
+        obj : {<br>
+        moreFile : 是否每张图片对应一个文件域（默认false）<br>
+        imgNum : 允许上传的最大图片数量（默认1张）<br>
+        imgNumFun : 当超过允许上传的最大图片数量时进行的函数操作 //返回参数：最大的图片数量<br>
+        isImgFun : 当上传的不是图片时进行的函数操作<br>
+        cycleHtml ： 循环生成的图片外所包裹的标签（当没有时直接生成img标签）<br>
+        }
+    </p>
+    <h4 class="attention" style="padding: 0 10px 20px;">
+        注:<br>
+        若想删除图片必须给删除按钮和删除的对象加对应的class，<br>
+        例如：cycleHtml : &lt;li class="<span>cycleF</span>"&gt;&lt;img /&gt;&lt;span class="<span>deleteBtn</span>">删除&lt;/span&gt;&lt;/li&gt;
+    </h4>
+
+    <!--==================12 12 12 12 12=====================-->
+    <h3>12、根据概率生成对应的值:cqq.radomNum(obj)</h3>
+    概率值：<input type="text" id="randomTxt1" value="[0.1,0.2,0.2,0.3,0.1,0.08,0.02]" placeholder="输入概率"
+               style="padding: 10px;">
+    对应值：<input type="text" id="randomTxt2" value="['1','2','3','4','5','6','7']" placeholder="输入对应事件"
+               style="padding: 10px;">
+    <input type="button" id="randomBtn" value="生成随机数" style="padding: 5px 10px;"/>
+    <p style="padding: 20px 10px;">
+        设置的参数(对象)：{<br>
+        prob : 输入概率 //数组的形式<br>
+        event : 输入对应事件 //数组的形式<br>
+        num : 划分的总数 //默认1000（总数越大越精确）<br>}
+    </p>
+    <h4 class="attention" style="padding: 0 10px 20px;">
+        注:<br>
+        1、若概率相加总和不等于1，则每个的概率 = 每个的值 / 值的总和
+    </h4>
+    <script>
+        var radomArray = eval('[' + $('#randomTxt1').val() + ',' + $('#randomTxt2').val() + ']');
+        $('#randomBtn').click(function () {
+            var rNum = cqq.radomNum({
+                prob: eval($('#randomTxt1').val()),
+                event: eval($('#randomTxt2').val()),
+                num: 10000
+            });
+            alert(rNum);
+        });
+
+        function radomNum(options) {
+            var allNum = options.num || 1000;  //将所有数量分为若干等分，每次随机出来的数都在其中的概率
+            var radomNum = Math.random() * allNum;//生成的随机数
+            var i;
+            var arrNum = [options.prob, options.event];//概率和概率对应的事件组成的数组
+            var sumNum = 0; //所有概率相加总和，若不等于一则按比例换算成概率
+
+            for (i = 0; i < arrNum[0].length; i++) {
+                sumNum += arrNum[0][i];
+            }
+            console.log('总和：' + sumNum);
+            console.log('随机数;' + radomNum);
+
+            //若所有概率相加不等于1时
+            if (sumNum !== 1) {
+                for (i = 0; i < arrNum[0].length; i++) {
+                    arrNum[0][i] = arrNum[0][i] / sumNum;
+                }
+            }
+
+            var mNum1 = 0;
+            var allNum2 = options.num || 1000;
+            //循环和随机数进行大小判断
+            for (i = 0; i < arrNum[0].length; i++) {
+                allNum = allNum - arrNum[0][i] * allNum2;
+                if (i == 0 && radomNum >= allNum) {
+                    console.log(allNum + '-1000:' + arrNum[1][0]);
+                    return arrNum[1][0];
+                } else if (i == (arrNum[0].length - 1) && radomNum < allNum) {
+                    console.log('0-' + allNum + ':' + arrNum[1][arrNum[0].length - 1]);
+                    return arrNum[1][arrNum[0].length - 1];
+                } else if (radomNum >= allNum && radomNum < mNum1) {
+                    console.log(allNum + '-' + mNum1 + ':' + arrNum[1][i]);
+                    return arrNum[1][i];
+                }
+                mNum1 = allNum;
+            }
+        }
+    </script>
+
+    <!--==================13 13 13 13 13=====================-->
+    <h3>13、按指定顺序排列：cq.sortDrder(obj)</h3>
+    <style type="text/css">
+        .tab{
+            width: 450px;
+        }
+        .tab th,.tab td{
+            border-bottom: 1px solid #66ccff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .tab tbody tr:hover{
+            background: rgba(102, 204, 255, 0.2);
+        }
+        a{
+            cursor: pointer;
+        }
+        .arrangeBtn{
+            color: #949496;
+            font-size: 12px;
+        }
+    </style>
+    <table cellpadding="0" cellspacing="0" class="tab" style="margin-top: 15px;">
+        <thead>
+        <tr>
+            <th>名字</th>
+            <th>
+                id
+                <a class="arrangeBtn" id="arrangeBtn1">按a-b排列</a>
+            </th>
+            <th>
+                数量
+                <a class="arrangeBtn" id="arrangeBtn2">按小-大排列</a>
+            </th>
+        </tr>
+        </thead>
+        <tbody id="tabLetterCnt">
+        <tr>
+            <td>搜索</td>
+            <td>dddc</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>保持</td>
+            <td>adc</td>
+            <td>11</td>
+        </tr>
+        <tr>
+            <td>嗷嗷</td>
+            <td>sdf</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>中心</td>
+            <td>fgg</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>奥迪</td>
+            <td>fzg</td>
+            <td>9</td>
+        </tr>
+        </tbody>
+    </table>
+    <p style="padding: 20px 10px;">
+        设置的参数(对象)：{<br>
+        fElem : 循环元素的父元素//$(元素)的形式<br>
+        contentArr :要进行比较的内容(数组形式) //（数字不能为字符串的形式）<br>
+        orderFlag : 排序的方式，true：a-z或数字小到大（默认）,false:z-a或数字大到小排序的方式，true：a-z或数字小到大（默认）,false:z-a或数字大到小<br>}
+    </p>
+    <script>
+        //字母排序
+        $('#arrangeBtn1').click(function(){
+            var arr = [];
+            var fElem = $('#tabLetterCnt').children('tr');
+            fElem.each(function(i){
+                var abb = $(this).children('td').eq(1).text();
+                arr.push(abb);
+            });
+
+            sortDrder({
+                fElem : fElem,
+                contentArr : arr
+            });
+        });
+        //数字排序
+        $('#arrangeBtn2').click(function(){
+            var arr = [];
+            var fElem = $('#tabLetterCnt').children('tr');
+            fElem.each(function(i){
+                var abb = $(this).children('td').eq(2).text();
+                arr.push(Number(abb));
+            });
+            cq.sortDrder({
+                fElem : fElem,
+                contentArr : arr
+            });
+        });
+        function sortDrder(options){
+            var i;
+            var fElem = options.fElem;
+            var arr = options.contentArr;
+            var orderFlag = options.orderFlag || true; //排序的方式，true：a-z或数字小到大（默认）,false:z-a或数字大到小
+            //进行比较并获取返回的值和对调后的顺序
+            var returnArr = maopao(arr,orderFlag);
+            console.log(arr);
+            console.log(returnArr);
+
+            //将原来的内容进行保存
+            var fElemCopy = [];
+            for(i=0;true;i++){
+                if(i<arr.length){
+                    fElemCopy[i] = fElem.eq(i).html();
+                }else{
+                    if(i<(2*arr.length)){
+                        fElem.eq(i - arr.length).html(fElemCopy[returnArr[1][i - arr.length]]);
+                    }else{
+                        break;
+                    }
+                }
+            }
+
+//            //按指定的顺序进行排列
+//            for(i=0;i<arr.length;i++){
+//                fElem.eq(i).html(fElemCopy[returnArr[1][i]]);
+//            }
+        }
+        function maopao(arra,jF){
+            var temp,i,j,temp1;
+            var arrNum = [];
+            for(i = 0;i<arra.length;i++){
+                arrNum[i] = i;
+            }
+            var judgeFlag = jF || true; //排序的方式，true：a-z或数字小到大（默认）,false:z-a或数字大到小
+            for(i=0;i<arra.length;i++){ //比较多少趟，从第一趟开始
+                for(j=0;j<arra.length-i-1;j++){ //每一趟比较多少次数
+                    if(judgeFlag ? arra[j]>arra[j+1] : arra[j]<arra[j+1]){
+                        temp=arra[j];
+                        arra[j]=arra[j+1];
+                        arra[j+1]=temp;
+
+                        //对改变的顺序记录下来
+                        temp1=arrNum[j];
+                        arrNum[j]=arrNum[j+1];
+                        arrNum[j+1] = temp1;
+                    }
+                }
+            }
+            return [arra,arrNum];//返回改变后的值和改变的顺序
+        }
+    </script>
+
+    <!--==================14 14 14 14 14=====================-->
+    <h3>14、弹出框/滚动：cq.alert(obj)</h3>
+    <input type="button" id="demo1" value="按钮" style="padding: 5px 10px;"/>
+    <!--<input type="button" id="demo2" value="按钮" style="padding: 5px 10px;"/>-->
+
+    <div style="width: 250px;height: 300px;border: 1px solid;overflow-y: auto" id="d1"></div>
+    <script src="../js/b.js"></script>
+    <script>
+        ;(function(){
+            var arr=['item 1','item 2','item 3'];
+
+            var list = '<ul><li>'+arr.join('</li><li>')+'</li></ul>';
+            $('#d1').html(list);
+        })();
+        ;!function(){
+            var aaa = function(t,callback,exports){
+              if(t = '123') console.log(true);
+                return onCallback()
+            };
+            //回调
+            function onCallback(){
+                exports.push(layui[item]);
+                apps.length > 1 ?
+                        that.use(apps.slice(1), callback, exports)
+                        : ( typeof callback === 'function' && callback.apply(layui, exports) );
+            }
+            $('#demo1').click(function(){
+                var adc = show();
+                console.log(adc);
+            });
+        }();
+
+        (function(){})()
+    </script>
+
+    <!--==================15 15 15 15 15=====================-->
+    <h3>15、轮播：setBanner(obj)</h3>
+    <style type="text/css">
+        #banner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #banner ul{
+            width: 1000%;
+            height: 100%;
+            position: absolute;
+            left: 0%;
+            top: 0;
+        }
+
+        #banner ul li {
+            width: 10%;
+            height: 100%;
+            list-style-type: none;
+            /*background:url('images/74/1.jpg') no-repeat center top;*/
+            float: left;
+            text-align: center;
+            /*line-height: 380px;*/
+            /*border: 1px solid;*/
+        }
+        #banner ul li img{
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #banner ol{
+            text-align: center;
+            position: absolute;
+            z-index: 100;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            /*margin-left: 50%;*/
+        }
+
+        #banner ol li{
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border: 1px solid;
+            border-radius: 50%;
+            /*float: left;*/
+            list-style-type: none;
+            margin: 0 3px;
+            cursor: pointer;
+        }
+
+        #banner span {
+            width: 100px;
+            height: 100px;
+            font-size: 100px;
+            color: #66ccff;
+            position: absolute;
+            left: 5%;
+            top: 20%;
+            text-align: center;
+            line-height: 100px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }
+
+        #banner span.next-btn {
+            right: 5%;
+            left: auto;
+        }
+    </style>
+    <div style="width: 300px;height: 200px;">
+        <div id="banner">
+            <ul>
+                <li>11111<img src="http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg" /></li>
+                <li>22222<img src="http://img06.tooopen.com/images/20160818/tooopen_sy_175866434296.jpg" /></li>
+                <li>33333<img src="http://img06.tooopen.com/images/20160818/tooopen_sy_175833047715.jpg" /></li>
+                <li>44444<img src="http://www.jq22.com/img/cs/500x300-4.png" /></li>
+            </ul>
+            <!--若不需要开启左右按钮时，删除span即可-->
+            <span class="prev-btn"><</span>
+            <span class="next-btn">></span>
+        </div>
+    </div>
+    <p style="padding: 20px 10px;">
+        设置的参数(对象)：{<br>
+        boxElem : 轮播循环元素的父元素//$(元素)的形式（默认$('#banner')）<br>
+        banTime :轮播更换间隔（默认3000ms）<br>
+        slideTime :图片滑动速度（默认速度1000ms）<br>
+        imgSrc :图片路径（默认无）<br>
+        aSrc :图片对应的链接（默认'#none'）<br>
+        cirFlag :是否开启小圆点（默认开启）<br>
+        cirColor :小圆点颜色（默认黑色）<br>
+    </p>
+    <style type="text/css">
+        .ml1{
+            margin-left: 50px;
+        }
+        .ml2{
+            margin-left: 25px;
+        }
+    </style>
+    <h4 class="attention" style="padding: 0 10px 20px;">
+        注:<br>
+        1、若不需要开启左右按钮时，删除span即可，并且可以自定义按钮的样式<br/>
+        2、代码样式：<br/>
+        &lt;div id="banner"&gt;<br/>
+        <span class="ml2"></span> &lt;ul&gt;<br/>
+        <span class="ml1"></span>&lt;li&gt;&lt;a&gt;&lt;img src="..."&gt;&lt;/a&gt;&lt;/li&gt;<br/>
+        <span class="ml1"></span>&lt;li&gt;&lt;a&gt;&lt;img src="..."&gt;&lt;/a&gt;&lt;/li&gt;<br/>
+        <span class="ml1"></span>&lt;li&gt;&lt;a&gt;&lt;img src="..."&gt;&lt;/a&gt;&lt;/li&gt;<br/>
+        <span class="ml2"></span>&lt;/ul&gt;<br/>
+        <span class="ml2"></span>&lt;!--若不需要开启左右按钮时，删除span即可--&gt;<br/>
+        <span class="ml2"></span>&lt;span class="prev-btn"&gt;&lt;&lt;/span&gt;<br/>
+        <span class="ml2"></span>&lt;span class="next-btn"&gt;&gt;&lt;/span&gt;<br/>
+        &lt;/div&gt;
+    </h4>
+    <script>
+        setBanner({
+//        imgSrc: [
+//            'http://img02.tooopen.com/images/20150928/tooopen_sy_143912755726.jpg',
+//            'http://img06.tooopen.com/images/20160818/tooopen_sy_175866434296.jpg',
+//            'http://img06.tooopen.com/images/20160818/tooopen_sy_175833047715.jpg'
+//        ],
+            slideTime : 500
+//            ,cirFlag : false
+        });
+        function setBanner(opt) {
+            var i;
+            var htmlStr = '';
+            var opts = opt || {};
+            var index = 0; //最开始显示的图片（第一张开始）
+            var banTime = opts.banTime || 3000; //轮播更换间隔（默认3000ms）
+            var slideTime = opts.slideTime || 1000; //图片滑动速度（默认速度1000ms）
+            var boxElem = opts.boxElem || $('#banner'); //轮播的最外层
+            var imgSrc = opts.imgSrc || []; //图片路径（默认无）
+            var putImg = imgSrc.length ? true : false; //是否需要放入图片路径（当图片已写入时,默认需要）
+            var aSrc = opts.aSrc || Array(imgSrc.length); //图片对应的链接（默认'#none'）
+//            var btnFlag = opts.btnFlag === false ? false : true; //是否开启左右按钮（默认开启）
+            var cirFlag = opts.cirFlag === false ? false : true; //是否开启小圆点（默认开启）
+            var cirColor = opts.cirColor || '#000000'; //小圆点颜色（默认黑色）
+
+            var imgIength = putImg ? imgSrc.length : boxElem.children('ul').children('li').length; //轮播的总数量
+
+            //图片添加
+            if(putImg){
+                htmlStr +='<ul>';
+                //写入图片
+                for (i = 0; i < imgSrc.length; i++) {
+                    htmlStr += '<li><a href="' + aSrc[i] + '">' +
+                            '<img src="' + imgSrc[i] + '" />' +
+                            '</a></li>';
+                }
+                htmlStr +='</ul>';
+            }
+
+            //小圆点添加
+//            if(cirFlag){
+//                htmlStr += '<ol class="bannerCirNum">';
+//                //写入小圆点
+//                for (i = 0; i < imgIength; i++) {
+//                    htmlStr += '<li></li>';
+//                }
+//                htmlStr +='</ol>';
+//            }
+
+            cirFlag && (function(){
+                htmlStr += '<ol class="bannerCirNum">';
+                //写入小圆点
+                for (i = 0; i < imgIength; i++) {
+                    htmlStr += '<li></li>';
+                }
+                htmlStr +='</ol>';
+            })();
+
+
+            boxElem.append(htmlStr);
+
+            var timer;  //定时器
+            cirNum(index);//初始化小圆点
+
+            //当鼠标移动到banner上面的时候，显示左右按钮
+            boxElem.mouseenter(function () {
+                //按钮淡入
+                boxElem.children('span').stop(true).fadeIn();
+
+                //图片的工作
+                clearInterval(timer);
+            });
+
+            boxElem.mouseleave(function () {
+                //按钮淡出
+                boxElem.children('span').stop(true).fadeOut();
+
+                //重启定时器
+                timer = setInterval(function () {
+                    index++;
+                    index %= imgIength;
+
+                    cirNum(index); //小圆点的变化
+
+                    boxElem.children('ul').animate({
+                        left: '-' + (index * 100) + '%'
+                    }, slideTime);
+
+                }, banTime);
+            });
+
+            //向后按钮的功能
+            boxElem.find('.next-btn').click(function () {
+                index++;
+                index %= imgIength;
+
+                cirNum(index); //小圆点的变化
+
+                $('#banner ul').animate({
+                    left: '-' + (index * 100) + '%'
+                }, slideTime);
+            });
+
+            //向前按钮的功能
+            boxElem.find('.prev-btn').click(function () {
+                index--;
+                if (index < 0) {
+                    index = imgIength - 1;
+                }
+
+                cirNum(index); //小圆点的变化
+
+                $('#banner ul').animate({
+                    left: '-' + (index * 100) + '%'
+                }, slideTime);
+            });
+
+            //图片自动播放
+            timer = setInterval(function () {
+                index++;
+                index %= imgIength;
+
+                cirNum(index); //小圆点的变化
+
+                boxElem.children('ul').animate({
+                    left: '-' + (index * 100) + '%'
+                }, slideTime);
+
+            }, banTime);
+
+            boxElem.find('.bannerCirNum li').each(function(i){
+
+                $(this).click(function(){
+                    index = i;
+                    cirNum(index);
+                    boxElem.children('ul').animate({
+                        left: '-' + (index * 100) + '%'
+                    }, slideTime);
+                });
+
+            });
+
+            function cirNum(i){
+                if(cirFlag){
+                    boxElem.find('.bannerCirNum li').each(function(){
+                        $(this).css({'background': 'none'});
+                    });
+                    boxElem.find('.bannerCirNum li').eq(i).css({'background': cirColor});
+                }
+            }
+        }
+    </script>
+
+    <!--==================16 16 16 16 16=====================-->
+    <h3>16、返回顶部：rT(elem)</h3>
+    <style type="text/css">
+        .returnTop{
+            position: fixed;
+            right: 5%;
+            bottom: 10%;
+            display: block;
+            width: 35px;
+            background: #333;
+            text-align: center;
+            padding: 10px;
+            color: #ffffff;
+            opacity: .2;
+            cursor: pointer;
+            border-radius: 50%;
+            transform: rotate(-180deg) scale(.8);
+            transition: .25s linear all;
+        }
+        .returnTop:hover{
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+            transition: .25s linear all;
+        }
+    </style>
+    <a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+        返回顶部
+    </a>
+    <script>
+        //返回顶部
+        function rT(e){
+            //获取点击时的滚动条高度
+            var st = document.body.scrollTop ,time;
+            if($(e).attr('move') !== 'true' && st>0){
+                $(e).attr('move','true');//添加正在进行中的标识，防止重复点击
+                time= setInterval(function(){
+                    document.body.scrollTop -= 30;
+                    //有两种情况下会停止，向下滚动滚动条和到达顶部时
+                    if(st<=10 || st<document.body.scrollTop){
+                        clearInterval(time);
+                        $(e).attr('move','false');
+                    }
+                    st = document.body.scrollTop;
+                },10);
+            }
+        }
+    </script>
+
+    <!--==================17 17 17 17 17=====================-->
+    <h3>17、分页按钮：rT(elem)</h3>
+    <style type="text/css">
+        li{
+            list-style-type: none;
+        }
+        .cq_pagingBtn .btnBox{
+            overflow: hidden;
+            margin: 35px 0;
+        }
+        .cq_pagingBtn .btnBox a{
+            float: left;
+            display: block;
+            width: 25px;
+            height: 25px;
+            text-align: center;
+            line-height: 25px;
+            border: 1px solid;
+        }
+        .cq_pagingBtn .btnBox .sel{
+            color: #fff;
+            background: #333;
+            border: 1px solid #333;
+        }
+        .cq_pagingBtn .btnBox a+a{
+            margin-left: -1px;
+        }
+
+        .boLang{
+            width: 500px;
+            height: 100px;
+            border: 1px solid #66ccff;
+            background-color: #66ccff;
+            overflow: hidden;
+            position: relative;
+        }
+        .yunDong{
+            width: 1000px;
+            height: 1000px;
+            background-color: #fff;
+            border-radius: 43%;
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            animation-name: rotate;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            animation-duration: 8s;
+        }
+        .yunDong::after{
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 45%;
+            background-color:#fff;
+            transform: rotate(90deg);
+            position: absolute;
+        }
+        .yunDong::before{
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 45%;
+            background-color: rgba(249, 245, 245,0.4);
+            transform: rotate(127deg);
+            position: absolute;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: translate(-50%, -1%) rotateZ(0deg);
+            }
+            50% {
+                transform: translate(-50%, -5%) rotateZ(180deg);
+            }
+            100% {
+                transform: translate(-50%, -1%) rotateZ(360deg);
+            }
+        }
+        .boLang .text{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            z-index: 5;
+            font-size: 20px;
+        }
+    </style>
+    <div id="pagingBtn" class="cq_pagingBtn">
+        <div class="btnBox">
+            <a>1</a>
+            <a>2</a>
+            <a>3</a>
+        </div>
+    </div>
+
+    <div class='boLang'>
+        <span class='text'>水波效果</span>
+        <div class='yunDong'></div>
+    </div>
+
+    <script type="text/javascript">
+       paging($('#pagingBtn'));
+        function paging(elem){
+            var e = elem;
+            var allPageSize = 10;//总的页数
+            var showMaxPage = 5;//最多显示的页数
+            var setNum = 5; //当前的页数(默认从第一页开始)
+//            var arr = Array.apply(null, Array(allPageSize)).map(function(){return setNum++});
+
+            var str = '',strH = '<div class="btnBox">',strF = ''; //参数的设定
+            var setNum1,setNum2 = allPageSize; //初始页数设定
+            var selD = '';
+
+            //当显示的页数小于总的页数时
+//            if(+showMaxPage<+allPageSize){
+//                setNum = (showMaxPage+setNum)>allPageSize ? (allPageSize-showMaxPage+1): setNum;
+//                setNum1 = setNum>1 ? setNum:2;
+//                setNum2 = setNum>1 ? showMaxPage+setNum-3: showMaxPage+setNum-1;
+//                //显示第一页,并判断神略号是否该出现
+//                strH += setNum>2? '<a data-page="1">1</a><a>...</a>': '<a data-page="1" class="sel">1</a>';
+//
+//                //显示最后一页,并判断神略号是否该出现
+//                strF += setNum2<allPageSize?'' +
+//                '<a>...</a><a data-page="'+ allPageSize +'">'+ allPageSize +'</a>':
+//                '<a data-page="'+ allPageSize +'">'+ allPageSize +'</a></div>';
+//
+//            }else{
+//                strF = '</div>';
+//            }
+
+            var divNum;
+            if(showMaxPage%2){
+                //最多显示的页数为基数时
+                divNum = setNum - Math.floor((showMaxPage - 2)/2);
+                setNum1 = divNum > 0 ? divNum : 1 ;
+                console.log(divNum);
+                console.log(setNum1);
+                setNum2 = setNum + Math.floor((showMaxPage - 2)/2);//显示到的页数（减去首页+尾页）
+            }
+
+            for(var j = setNum1;j<=setNum2;j++){
+                selD = j===setNum? 'sel':'';
+                if((setNum/showMaxPage)>1){
+//                    str += '<a data-page="'+ j +'" class="'+ selD +'">...</a>';
+                }else{
+//                    str += '<a data-page="'+ j +'" class="'+ selD +'">'+ j +'</a>';
+                }
+                str += '<a data-page="'+ j +'" class="'+ selD +'">'+ j +'</a>';
+            }
+
+            str = strH + str + strF;
+            // console.log(str);
+
+            e.html(str);
+        }
+
+    </script>
+</div>
+</body>
+</html>
