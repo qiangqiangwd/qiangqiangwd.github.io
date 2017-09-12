@@ -1461,7 +1461,7 @@
             boxElem.append(htmlStr);
 
             var timer;  //定时器
-            cirNum(index);//初始化小圆点
+            cirNum(cqq);//初始化小圆点
 
             //当鼠标移动到banner上面的时候，显示左右按钮
             boxElem.mouseenter(function () {
@@ -1478,13 +1478,13 @@
 
                 //重启定时器
                 timer = setInterval(function () {
-                    index++;
-                    index %= imgIength;
+                    cqq++;
+                    cqq %= imgIength;
 
-                    cirNum(index); //小圆点的变化
+                    cirNum(cqq); //小圆点的变化
 
                     boxElem.children('ul').animate({
-                        left: '-' + (index * 100) + '%'
+                        left: '-' + (cqq * 100) + '%'
                     }, slideTime);
 
                 }, banTime);
@@ -1492,39 +1492,39 @@
 
             //向后按钮的功能
             boxElem.find('.next-btn').click(function () {
-                index++;
-                index %= imgIength;
+                cqq++;
+                cqq %= imgIength;
 
-                cirNum(index); //小圆点的变化
+                cirNum(cqq); //小圆点的变化
 
                 $('#banner ul').animate({
-                    left: '-' + (index * 100) + '%'
+                    left: '-' + (cqq * 100) + '%'
                 }, slideTime);
             });
 
             //向前按钮的功能
             boxElem.find('.prev-btn').click(function () {
-                index--;
-                if (index < 0) {
-                    index = imgIength - 1;
+                cqq--;
+                if (cqq < 0) {
+                    cqq = imgIength - 1;
                 }
 
-                cirNum(index); //小圆点的变化
+                cirNum(cqq); //小圆点的变化
 
                 $('#banner ul').animate({
-                    left: '-' + (index * 100) + '%'
+                    left: '-' + (cqq * 100) + '%'
                 }, slideTime);
             });
 
             //图片自动播放
             timer = setInterval(function () {
-                index++;
-                index %= imgIength;
+                cqq++;
+                cqq %= imgIength;
 
-                cirNum(index); //小圆点的变化
+                cirNum(cqq); //小圆点的变化
 
                 boxElem.children('ul').animate({
-                    left: '-' + (index * 100) + '%'
+                    left: '-' + (cqq * 100) + '%'
                 }, slideTime);
 
             }, banTime);
@@ -1532,10 +1532,10 @@
             boxElem.find('.bannerCirNum li').each(function(i){
 
                 $(this).click(function(){
-                    index = i;
-                    cirNum(index);
+                    cqq = i;
+                    cirNum(cqq);
                     boxElem.children('ul').animate({
-                        left: '-' + (index * 100) + '%'
+                        left: '-' + (cqq * 100) + '%'
                     }, slideTime);
                 });
 
