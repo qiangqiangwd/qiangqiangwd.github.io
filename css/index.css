@@ -28,7 +28,6 @@ td {
     margin: 0;
     padding: 0;
     font-family: "microsoft yahei", "宋体", "Arial Narrow";
-    color: #666666;
 }
 li {
     list-style-type: none;
@@ -64,6 +63,10 @@ a {
 }
 
 /**/
+body{
+    background: url(../imgs/o_bg5.jpg) no-repeat;
+    background-attachment: fixed;
+}
 .container{
     min-width: 1100px;
 }
@@ -94,6 +97,9 @@ a {
     width: 90%;
     min-width: 1100px;
     margin: 25px auto;
+    padding: 30px 0;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
 }
 .showCnt .leftCnt{
     width: 30%;
@@ -106,17 +112,88 @@ a {
     padding: 0 8%;
 }
 .contentList .listBox{
-    margin-bottom: 25px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    /*border-bottom: 1px solid #ccc;*/
 }
 .contentList .title{
     padding: 10px 0;
+    position: relative;
+}
+.contentList .title::before{
+    content: "";
+    display: block;
+    width: 4px;
+    height: 25px;
+    background: #66ccff;
+    position: absolute;
+    top: 11px;
+    left: -10px;
+}
+.contentList .title .date{
+    font-weight: 400;
+    font-size: 14px;
+    color: #999;
 }
 .contentList .title a{
     color: #666;
+    position: relative;
+    transition: all linear .25s;
+}
+.contentList .title a:hover{
+    color: #242424;
+    transition: all linear .25s;
+}
+.contentList .title a::before{
+    content: "";
+    display: block;
+    width: 0;
+    height: 1px;
+    background: #ccc;
+    opacity: 1;
+    transition: all linear .25s;
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+}
+.contentList .title a:hover::before{
+    width: 100%;
+    background: #666;
+    transition: all linear .25s;
 }
 .contentList .cnt{
     padding: 10px 0;
+    color: #666;
 }
+.mainTitle{
+    color: #666;
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+/*详细页面样式*/
+.detailPage{
+    width: 80%;
+    margin: 0 auto;
+    padding: 10px 5%;
+}
+.mainContent{
+}
+.mainContent p{
+    text-indent: 2em;
+    color: #666;
+    padding-bottom: 15px;
+}
+.mainContent .describeTit{
+    padding: 8px 0;
+    margin-bottom: 15px;
+    border-left: 4px solid;
+    color:  #66ccff;
+    background: rgba(247, 247, 247, 0.2);
+}
+
+
 
 /*展示框样式*/
 .myPracticeDemo{

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>波浪效果</title>
+    <link rel="stylesheet" href="css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="pubJs/layui/css/layui.css" />
+    <script src="pubJs/layui/layui.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+    .boLang{
+        width: 500px;
+        height: 100px;
+        border: 1px solid #66ccff;
+        background-color: #66ccff;
+        overflow: hidden;
+        position: relative;
+        margin: 0 auto;
+    }
+    .yunDong{
+        width: 1000px;
+        height: 1000px;
+        background-color: #fff;
+        border-radius: 43%;
+        position: absolute;
+        bottom: 25px;
+        left: 50%;
+        animation-name: rotate;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+        animation-duration: 8s;
+    }
+    .yunDong::after{
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 45%;
+        background-color:#fff;
+        transform: rotate(90deg);
+        position: absolute;
+    }
+    .yunDong::before{
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 45%;
+        background-color: rgba(249, 245, 245,0.4);
+        transform: rotate(127deg);
+        position: absolute;
+    }
+
+    @keyframes rotate {
+        0% {
+            transform: translate(-50%, -1%) rotateZ(0deg);
+        }
+        50% {
+            transform: translate(-50%, -5%) rotateZ(180deg);
+        }
+        100% {
+            transform: translate(-50%, -1%) rotateZ(360deg);
+        }
+    }
+    .boLang .text{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 5;
+        font-size: 20px;
+    }
+</style>
+<body>
+    <div class="container">
+        <!--导航-->
+        <div id="nav">
+            <ul class="clearfix">
+                <li>
+                    <a href="index.html">首页</a>
+                </li>
+                <li>
+                    <a href="#">自我介绍</a>
+                </li>
+                <li>
+                    <a href="#">其他部分</a>
+                </li>
+                <li>
+                    <a href="#">结尾</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="showCnt clearfix">
+        <div class="detailPage">
+            <h2 class="mainTitle">
+                纯css实现波浪效果
+            </h2>
+            <div class="mainContent">
+                <p class="describeTit">
+                    本文只是单纯的为了实现效果，并未太多的考虑兼容方面的问题，所以最好是使用最新的 Chrome浏览器
+                </p>
+                <p>
+                    其原理是采用css3中的动画使两个近似圆形并相互重叠的容器进行旋转(其中一个容器进行了一些角度的旋转)，
+                    利用视觉差形成了波浪的效果。
+                </p>
+<pre class="layui-code" lay-title="html代码">
+    <div class='boLang' style="margin-top: 25px;">
+        <span class='text'>波浪效果</span>
+        <div class='yunDong'></div>
+    </div>
+</pre>
+<pre class="layui-code" lay-title="css代码">
+    .boLang{
+        width: 500px;
+        height: 100px;
+        border: 1px solid #66ccff;
+        background-color: #66ccff;
+        overflow: hidden;
+        position: relative;
+        margin: 0 auto;
+    }
+    .yunDong{
+        width: 1000px;
+        height: 1000px;
+        background-color: #fff;
+        border-radius: 43%;
+        position: absolute;
+        bottom: 25px;
+        left: 50%;
+        animation-name: rotate;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+        animation-duration: 8s;
+    }
+    .yunDong::after{
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 45%;
+        background-color:#fff;
+        transform: rotate(90deg);
+        position: absolute;
+    }
+    .yunDong::before{
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 45%;
+        background-color: rgba(249, 245, 245,0.4);
+        transform: rotate(127deg);
+        position: absolute;
+    }
+
+    @keyframes rotate {
+        0% {
+            transform: translate(-50%, -1%) rotateZ(0deg);
+        }
+        50% {
+            transform: translate(-50%, -5%) rotateZ(180deg);
+        }
+        100% {
+            transform: translate(-50%, -1%) rotateZ(360deg);
+        }
+    }
+    .boLang .text{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 5;
+        font-size: 20px;
+    }
+</pre>
+                <p>效果图：</p>
+                <div class='boLang' style="margin-top: 25px;">
+                    <span class='text'>波浪效果</span>
+                    <div class='yunDong'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '300px'
+        }); //引用code方法
+    });
+</script>
+</html>
