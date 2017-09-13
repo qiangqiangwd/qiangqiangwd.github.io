@@ -285,6 +285,10 @@ body{
     text-indent: 2em;
     color: #666;
     padding-bottom: 15px;
+    line-height: 24px;
+}
+.mainContent p img{
+    max-width: 500px;
 }
 .mainContent .describeTit{
     padding: 8px 0;
