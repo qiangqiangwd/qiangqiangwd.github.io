@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>瀑布流布局</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+    #waterFall{
+        width: 900px;
+        margin: 0 auto;
+        border: 1px solid #333;
+        position: relative;
+    }
+    .wf_box1{
+        float: left;
+        width: 21%;
+        padding: 0 2%;
+    }
+    .wf_box1>div{
+        width: 100%;
+        background: #66ccff;
+        margin: 15px 0;
+        padding: 15px 0 0;
+        text-align: center;
+        color: #3e3e3e;
+    }
+</style>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            在页面中进行瀑布流布局
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                在页面中进行瀑布流布局
+            </p>
+            <p>
+                最近公司有个项目恰好要用到瀑布流布局，于是专门对这种布局的方法进行了研究，
+            </p>
+            <p>
+                根据总的宽度/每个盒子的宽度计算出每一行盒子的个数，在统计每列盒子总的的高度
+                （开始以第一行的高度为准），在根据判断选出每列盒子最小的高度，将后面的元素由
+                定位定位在最小的高度的下面，最后再次统计每列盒子总的的高度（每列盒子最小的高度
+                +新增的），以此类推...
+            </p>
+            <p>
+                其实现代码如下：
+            </p>
+<pre class="layui-code" lay-title="html+css代码">
+
+<div id="waterFall" class="clearfix">
+    <div class="wf_box1">
+        <div style="height: 100px">100px</div>
+    </div>
+    <div class="wf_box1">
+        <div style="height: 150px">150px</div>
+    </div>
+    <div class="wf_box1">
+        <div style="height: 120px">120px</div>
+    </div>
+    <div class="wf_box1">
+        <div style="height: 50px">50px</div>
+    </div>
+    <div class="wf_box1">
+        <div style="height: 70px">70px</div>
+    </div>
+    <div class="wf_box1">
+        <div style="height: 90px">90px</div>
+    </div>
+    <div class="wf_box1">
+        <div style="height: 30px">30px</div>
+    </div>
+</div>
+</pre>
+<pre class="layui-code" lay-title="js代码">
+    //调用
+    (function(){
+        waterfall({
+            boxC : $(".wf_box1"), //内容层
+            boxF : $('#waterFall') //总的盒子
+        });
+    })();
+
+    function waterfall(opt){
+        var opts = opt || {},
+            _boxs = opts.boxC, //每一个内容层节点
+            _boxF = opts.boxF, //总的盒子
+            w = _boxs.eq(0).outerWidth(), //内容层的宽度（每一个内容层的宽度需保持一致）
+            cols = Math.floor(_boxF.width() / w); //总的盒子宽度 / 内容层的宽度 = 一行中内容层的个数
+        var hArr = []; //用于保存第一行每一个内容层的高度
+        _boxs.each(function(index,value){
+            var h = _boxs.eq(index).outerHeight();
+            if(index < cols){
+                hArr[index] = h;
+            }else{
+                var minH = Math.min.apply(null , hArr);  //找出hArr中最小的高度
+                var minHIndex = $.inArray(minH , hArr); //利用jquery方法找出数组元素对应的序号
+                $(value).css({
+                    'position' : 'absolute',
+                    'top' : minH + 'px',
+                    'left' : minHIndex*w + 'px'
+                });
+                console.log();
+                hArr[minHIndex] += h; //新增的内容层的高度 + hArr中最小的高度
+                _boxF.css('height',Math.max.apply(null , hArr) + 'px');//为总的盒子添加一个最大的高度
+            }
+        });
+    }
+</pre>
+            <p>效果展示：</p>
+            <style>
+                #waterFallBox{
+                    width: 900px;
+                    margin: 0 auto;
+                    border: 1px solid #333;
+                    position: relative;
+                }
+                .wf_box{
+                    float: left;
+                    width: 21%;
+                    padding: 0 2%;
+                }
+                .wf_box>div{
+                    width: 100%;
+                    background: #66ccff;
+                    margin: 15px 0;
+                    padding: 15px 0 0;
+                    text-align: center;
+                    color: #3e3e3e;
+                }
+            </style>
+            <div id="waterFallBox" class="clearfix">
+                <div class="wf_box">
+                    <div style="height: 100px">100px</div>
+                </div>
+                <div class="wf_box">
+                    <div style="height: 150px">150px</div>
+                </div>
+                <div class="wf_box">
+                    <div style="height: 120px">120px</div>
+                </div>
+                <div class="wf_box">
+                    <div style="height: 50px">50px</div>
+                </div>
+                <div class="wf_box">
+                    <div style="height: 70px">70px</div>
+                </div>
+                <div class="wf_box">
+                    <div style="height: 90px">90px</div>
+                </div>
+                <div class="wf_box">
+                    <div style="height: 30px">30px</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '600px'
+        }); //引用code方法
+    });
+
+    (function(){
+        waterfall({
+            boxC : $(".wf_box"),
+            boxF : $('#waterFallBox')
+        });
+    })();
+    function waterfall(opt){
+        var opts = opt || {},
+            _boxs = opts.boxC, //每一个内容层节点
+            _boxF = opts.boxF, //总的盒子
+            w = _boxs.eq(0).outerWidth(), //内容层的宽度（每一个内容层的宽度需保持一致）
+            cols = Math.floor(_boxF.width() / w); //总的盒子宽度 / 内容层的宽度 = 一行中内容层的个数
+        var hArr = []; //用于保存第一行每一个内容层的高度
+        _boxs.each(function(index,value){
+            var h = _boxs.eq(index).outerHeight();
+            if(index < cols){
+                hArr[index] = h;
+            }else{
+                var minH = Math.min.apply(null , hArr);  //找出hArr中最小的高度
+                var minHIndex = $.inArray(minH , hArr); //利用jquery方法找出数组元素对应的序号
+                $(value).css({
+                    'position' : 'absolute',
+                    'top' : minH + 'px',
+                    'left' : minHIndex*w + 'px'
+                });
+                console.log();
+                hArr[minHIndex] += h; //新增的内容层的高度 + hArr中最小的高度
+                _boxF.css('height',Math.max.apply(null , hArr) + 'px'); //为总的盒子添加一个最大的高度
+            }
+        });
+    }
+</script>
+</html>

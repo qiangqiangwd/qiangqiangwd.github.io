@@ -88,7 +88,7 @@ body{
     background-attachment: fixed;
 }
 .container{
-    min-width: 1100px;
+    min-width: 1200px;
 }
 /*导航部分*/
 .w1100{
@@ -160,10 +160,29 @@ body{
 .showCnt{
     width: 90%;
     min-width: 1100px;
-    margin: 25px auto;
+    margin: 40px auto;
     padding: 30px 0;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 5px;
+    position: relative;
+}
+.goBack{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+.goBack a{
+    display: inline-block;
+    padding: 5px 15px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    color: #666;
+    transition: all linear .25s;
+}
+.goBack a:hover{
+    border: 1px solid #999;
+    color: #333;
+    transition: all linear .25s;
 }
 .showCnt .leftCnt{
     width: 30%;
@@ -265,6 +284,7 @@ body{
 .contentList .cnt{
     padding: 10px 0;
     color: #666;
+    line-height: 24px;
 }
 .mainTitle{
     color: #666;
@@ -272,6 +292,7 @@ body{
     font-size: 20px;
     margin-bottom: 15px;
 }
+
 
 /*详细页面样式*/
 .detailPage{
@@ -290,12 +311,139 @@ body{
 .mainContent p img{
     max-width: 500px;
 }
+.mainContent p a{
+    text-decoration: underline;
+    color: #66ccff;
+}
+.mainContent p .key{
+    font-weight: 600;
+    color: #333;
+}
 .mainContent .describeTit{
     padding: 8px 0;
     margin-bottom: 15px;
     border-left: 4px solid;
     color:  #66ccff;
     background: rgba(247, 247, 247, 0.2);
+}
+.mainInput{
+    padding: 8px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
+    color: #666;
+    width: 200px;
+    outline: none;
+}
+.mainBtn2{
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    /*border: 1px solid #66ccff;*/
+    background: rgba(102, 204, 255, 0.6);
+    border-radius: 3px;
+    transition: .25s linear all;
+}
+.mainBtn2:hover{
+    /*border: 1px solid #e0e0e0;*/
+    background: rgba(102, 204, 255, 0.9);
+    transition: .25s linear all;
+}
+
+/*返回顶部*/
+.returnTop{
+    position: fixed;
+    right: 2%;
+    bottom: 10%;
+    display: block;
+    width: 35px;
+    background: rgba(51, 51, 51, 0.4);
+    text-align: center;
+    padding: 10px;
+    color: #ffffff;
+    cursor: pointer;
+    border-radius: 10%;
+    transition: .25s linear all;
+    opacity: 0;
+}
+.returnTop:hover{
+    background: rgba(51, 51, 51,.9);
+    transition: .25s linear all;
+}
+
+/*随笔部分页面*/
+.essaysBox{
+    padding: 0 5%;
+}
+.essaysBox .title ul{
+    border-bottom: 1px solid #e4e4e4;
+}
+.essaysBox .title ul li{
+    float: left;
+    padding: 0 20px;
+    margin: 10px 0;
+    color: #999;
+    position: relative;
+    border-right: 1px solid #ccc;
+}
+.essaysBox .title ul li:nth-last-of-type(1){
+    border-right: 0;
+}
+.essaysBox .title ul li::after{
+    content: "";
+    display: block;
+    width: 40%;
+    height: 3px;
+    background: #666;
+    position: absolute;
+    left: 50%;
+    margin-left: -60%;
+    bottom: -12px;
+    opacity: 0;
+    transition: .25s linear all;
+}
+.essaysBox .title ul li:hover{
+    color: #333;
+    transition: .25s linear all;
+}
+.essaysBox .title ul li:hover::after{
+    margin-left: -20%;
+    opacity: 1;
+    transition: .25s linear all;
+}
+.essaysBox .title ul .sel{
+    color: #333;
+}
+.essaysBox .title ul .sel::after{
+    content: "";
+    display: block;
+    width: 40%;
+    height: 3px;
+    background: #666;
+    position: absolute;
+    left: 50%;
+    margin-left: -20%;
+    bottom: -12px;
+    opacity: 1;
+}
+.essaysBox .cnt ul{
+    /*width: 1070px;*/
+    /*margin: 0 auto;*/
+    position: relative;
+}
+.essaysBox .cnt ul li{
+    float: left;
+    width: 33.3%;
+}
+.essaysBox .cnt ul li .c{
+    line-height: 22px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    color: #333;
+    margin: 5px;
+    padding: 10px;
+}
+.essaysBox .cnt ul li .ml{
+    margin-left: 15px;
 }
 
 
@@ -305,19 +453,36 @@ body{
     width: 1100px;
     margin: 0 auto;
 }
+.myPracticeDemo .mainTitle{
+    margin-left: 1%;
+}
 .myPracticeDemo ul li{
     float: left;
-    width: 24%;
-    border: 1px solid;
+    width: 22.9%;
+    height: 150px;
+    margin: 15px 1%;
+    /*border: 1px solid #ccc;*/
+    box-shadow: 0 0 5px #ccc;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+.myPracticeDemo ul li img{
+    max-width: 100%;
+    height: 100%;
 }
 .myPracticeDemo ul li .cnt{
     display: block;
-    height: 150px;
-    color: #333;
-}
-.myPracticeDemo ul li .cnt:hover{
-    background: rgba(51, 51, 51, 0.5);
+    width: 100%;
+    height: 100%;
     color: #fff;
+    text-align: center;
+    line-height: 150px;
+    background: rgba(51, 51, 51, 0.5);
+    position: absolute;
+    top: 100%;
+    left: 100%;
 }
 
 

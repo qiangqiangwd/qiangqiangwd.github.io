@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天室</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <!--<li>-->
+                <!--<a href="#">-->
+                <!--作品展示-->
+                <!--<span class="line"></span>-->
+                <!--</a>-->
+                <!--</li>-->
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            聊天室
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                简单的聊天室
+            </p>
+            <p>
+                用纯node.js所写的服务器，利用socket.io所提供
+                的浏览器端和服务器端的基于TCP连接的双向通道，
+                实现了最基本的文字信息的相互传输，除此之外还
+                添加了上传图片和添加表情的功能。
+            </p>
+            <p>
+                github代码展示：
+                <a href="https://github.com/qiangqiangwd/chatRoom" target="_blank" >
+                    https://github.com/qiangqiangwd/chatRoom
+                </a>
+                &nbsp;&nbsp;&nbsp;(代码中包含注释，这里就不再详细说明)
+            </p>
+            <p>
+                前端展示：
+                <a href="https://qiangqiangwd.github.io/chatRoom/src/" target="_blank" >
+                    https://qiangqiangwd.github.io/chatRoom/src/
+                </a>
+                &nbsp;&nbsp;&nbsp;(未设置服务器，只能看下前端页面样式 =. =！，要想真实体验可以下下来自行尝试。)
+            </p>
+        </div>
+    </div>
+</div>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '600px'
+        }); //引用code方法
+    });
+</script>
+</html>

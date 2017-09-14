@@ -22,13 +22,13 @@
             </h1>
             <ul class="clearfix">
                 <li>
-                    <a href="index.html" class="sel">
+                    <a href="index.html">
                         首页
                         <span class="line"></span>
                     </a>
                 </li>
                 <li>
-                    <a href="blog.html">
+                    <a href="blog.html" class="sel">
                         博客日志
                         <span class="line"></span>
                     </a>
@@ -39,32 +39,16 @@
                         <span class="line"></span>
                     </a>
                 </li>
-                <!--<li>-->
-                <!--<a href="#">-->
-                <!--作品展示-->
-                <!--<span class="line"></span>-->
-                <!--</a>-->
-                <!--</li>-->
             </ul>
         </div>
     </div>
 </div>
 <div class="showCnt clearfix">
-    <!--个人-->
-    <div class="leftCnt f-l">
-        <div class="head">
-            <img src="imgs/head.jpg" alt="">
-        </div>
-        <h3 class="userName">qiangqiangwd</h3>
-        <div class="btnBox">
-            <a href="#" class="mainBtn1">查看个人介绍</a>
-        </div>
-    </div>
     <!--博客日志-->
     <div class="rightCnt f-l">
         <div class="contentList">
             <h2 class="mainTitle">
-                最新博客日志
+                博客日志
             </h2>
             <div class="listBox">
                 <h3 class="title">
@@ -93,6 +77,31 @@
             </div>
             <div class="listBox">
                 <h3 class="title">
+                    <a href="views/waterfall2.html">
+                        在页面中进行瀑布流布局(css)
+                    </a>
+                    <span class="f-r date">2017-3-15</span>
+                </h3>
+                <div class="cnt">
+                    最近逛博客看到的一篇文章，可以用CSS3实现瀑布流布局，但要注意的
+                    是 Internet Explorer 9及更早 IE 版本浏览器不支持这种方法...
+                </div>
+            </div>
+            <div class="listBox">
+                <h3 class="title">
+                    <a href="views/waterfall.html">
+                        在页面中进行瀑布流布局(js)
+                    </a>
+                    <span class="f-r date">2017-3-10</span>
+                </h3>
+                <div class="cnt">
+                    最近公司有个项目恰好要用到瀑布流布局，于是专门对这种布局的方法进行了研究，
+                    其原理是利用js计算出每一个内容层所对应的位置再专门对每一个内容层进行绝对定位，
+                    使其在固定的位置...
+                </div>
+            </div>
+            <div class="listBox">
+                <h3 class="title">
                     <a href="views/galleryJs.html">
                         利用js实现的走廊效果
                     </a>
@@ -104,55 +113,20 @@
             </div>
         </div>
     </div>
-    <div style="clear: both;"></div>
-    <!--作品展示-->
-    <div class="myPracticeDemo">
-        <h2 class="mainTitle">
-            作品展示
-        </h2>
-        <ul class="clearfix">
-            <li>
-                <img src="imgs/index1.png" alt="">
-                <a href="https://qiangqiangwd.github.io/practiceDemo1/" target="_blank" class="cnt">
-                    早期的网页练习作品1
-                </a>
-            </li>
-            <li>
-                <img src="imgs/index2.png" alt="">
-                <a href="https://qiangqiangwd.github.io/practiceDemo2/" target="_blank" class="cnt">
-                    早期的网页练习作品2
-                </a>
-            </li>
-            <li>
-                <img src="imgs/index3.png" alt="">
-                <a href="https://qiangqiangwd.github.io/projectDemo3/" class="cnt" target="_blank">
-                    早期的网页练习作品3
-                </a>
-            </li>
-            <li>
-                <a class="cnt" target="_blank">
-                    早期的网页练习作品
-                </a>
-            </li>
-        </ul>
+    <!--个人-->
+    <div class="leftCnt f-l">
+        <div class="">
+            <input type="text" placeholder="搜索" class="mainInput">
+            <a href="#" class="mainBtn2">搜索</a>
+        </div>
     </div>
 </div>
 <a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
     返回顶部
 </a>
 
-    <!--<a href="cqq.html">cqq</a>-->
-    <!--<a href="http://www.zlct.com.cn/">公司官网</a>-->
+<!--<a href="cqq.html">cqq</a>-->
+<!--<a href="http://www.zlct.com.cn/">公司官网</a>-->
 <script src="js/main.js" charset="utf-8"></script>
-<script>
-    (function(){
-        //对封装的函数进行调用，参数为移入的元素和要滑动的元素
-        imgMOve.init({
-            moveInF : $('.myPracticeDemo ul li'),
-            moveInC : $('.myPracticeDemo ul li a')
-        });
-    })();
-
-</script>
 </body>
 </html>

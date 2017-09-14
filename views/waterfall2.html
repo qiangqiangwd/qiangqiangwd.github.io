@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>瀑布流布局</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+    #waterFallBox{
+        width: 900px;
+        margin: 0 auto;
+        border: 1px solid #333;
+        position: relative;
+    }
+    .wf_box{
+        float: left;
+        width: 21%;
+        padding: 0 2%;
+    }
+    .wf_box>div{
+        width: 100%;
+        background: #66ccff;
+        margin: 15px 0;
+        padding: 15px 0 0;
+        text-align: center;
+        color: #3e3e3e;
+    }
+</style>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            在页面中进行瀑布流布局(css)
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                CSS3实现瀑布流布局
+            </p>
+            <p>
+                最近逛博客看到的一篇文章，可以用CSS3实现瀑布流布局，但要注意的
+                是 Internet Explorer 9及更早 IE 版本浏览器不支持这种方法。
+            </p>
+            <p>
+                其实现的方法主要是利用了css3中的 column 属性，详细的说明可以看
+                <a href="http://www.w3school.com.cn/cssref/pr_columns.asp">W3C</a> 中的说明,
+                其中我们需要知道的是利用<span class="key">column-count: 把div中的文本分为多少列，
+                column-width: 规定列宽，
+                column-gap: 规定列间隙，break-inside: avoid: 避免元素内部断行并产生新列</span>
+            </p>
+            <p>
+                其实现代码如下：
+            </p>
+<pre class="layui-code" lay-title="html+css代码">
+<style type="text/css">
+/*大层*/
+.container{width:80%;margin: 0 auto;}
+/*瀑布流层*/
+.waterfall{
+    -moz-column-count:4; /* Firefox */
+    -webkit-column-count:4; /* Safari 和 Chrome */
+    column-count:4;
+    -moz-column-gap: 1em;
+    -webkit-column-gap: 1em;
+    column-gap: 1em;
+}
+/*一个内容层*/
+.item{
+    padding: 1em;
+    margin: 0 0 1em 0;
+    -moz-page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    break-inside: avoid;
+    border: 1px solid #000;
+}
+.item img{
+    width: 100%;
+    margin-bottom:10px;
+}
+</style>
+<div class="container">
+    <div class="waterfall">
+        <div class="item">
+            <p>1 内容内容内容内容内容内
+                容内容内容内容内容内容
+            容内容内容内容内容内容
+            容内容内容内容内容内容
+            容内容内容内容内容内容</p>
+        </div>
+        <div class="item">
+            <p>2 容内容内容内容内容内容 </p>
+        </div>
+        <div class="item">
+            <p>3 容内容内容内容内容内容容内容内容内容内容内容
+            容内容内容内容内容内容容内容内容内容内容内容</p>
+        </div>
+        <div class="item">
+            <p> 4 容内容内容内容内容内容容内容内容内容内容内容
+            容内容内容内容内容内容容内容内容内容内容内容
+            容内容内容内容内容内容容内容内容内容内容内容
+            容内容内容内容内容内容容内容内容内容内容内容</p>
+       </div>
+       <div class="item">
+            <p> 5 容内容内容内容内容内容容内容内容内容内容内容
+            容内容内容内容内容内容容内容内容内容内容内容
+            容内容内容内容内容内容</p>
+       </div>
+    </div>
+</div>
+</pre>
+            <p>效果展示：</p>
+            <style type="text/css">
+                /*大层*/
+                .containerBox{
+                    width:900px;
+                    margin: 0 auto;
+                }
+                /*瀑布流层*/
+                .waterfall{
+                    -moz-column-count:4; /* Firefox */
+                    -webkit-column-count:4; /* Safari 和 Chrome */
+                    column-count:4;
+                    -moz-column-gap: 1em;
+                    -webkit-column-gap: 1em;
+                    column-gap: 1em;
+                }
+                /*一个内容层*/
+                .item{
+                    padding: 1em;
+                    margin: 0 0 1em 0;
+                    -moz-page-break-inside: avoid;
+                    -webkit-column-break-inside: avoid;
+                    break-inside: avoid;
+                    border: 1px solid #000;
+                }
+            </style>
+            <div class="containerBox">
+                <div class="waterfall">
+                    <div class="item">
+                        <p>1 内容内容内容内容内容内
+                            容内容内容内容内容内容
+                            容内容内容内容内容内容
+                            容内容内容内容内容内容
+                            容内容内容内容内容内容</p>
+                    </div>
+                    <div class="item">
+                        <p>2 容内容内容内容内容内容 </p>
+                    </div>
+                    <div class="item">
+                        <p>3 容内容内容内容内容内容容内容内容内容内容内容
+                            容内容内容内容内容内容容内容内容内容内容内容</p>
+                    </div>
+                    <div class="item">
+                        <p> 4 容内容内容内容内容内容容内容内容内容内容内容
+                            容内容内容内容内容内容容内容内容内容内容内容
+                            容内容内容内容内容内容容内容内容内容内容内容
+                            容内容内容内容内容内容容内容内容内容内容内容</p>
+                    </div>
+                    <div class="item">
+                        <p> 5 容内容内容内容内容内容容内容内容内容内容内容
+                            容内容内容内容内容内容容内容内容内容内容内容
+                            容内容内容内容内容内容</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '600px'
+        }); //引用code方法
+    });
+
+    (function(){
+        waterfall({
+            boxC : $(".wf_box"),
+            boxF : $('#waterFallBox')
+        });
+    })();
+    function waterfall(opt){
+        var opts = opt || {},
+                _boxs = opts.boxC, //每一个内容层节点
+                _boxF = opts.boxF, //总的盒子
+                w = _boxs.eq(0).outerWidth(), //内容层的宽度（每一个内容层的宽度需保持一致）
+                cols = Math.floor(_boxF.width() / w); //总的盒子宽度 / 内容层的宽度 = 一行中内容层的个数
+        var hArr = []; //用于保存第一行每一个内容层的高度
+        _boxs.each(function(index,value){
+            var h = _boxs.eq(index).outerHeight();
+            if(index < cols){
+                hArr[index] = h;
+            }else{
+                var minH = Math.min.apply(null , hArr);  //找出hArr中最小的高度
+                var minHIndex = $.inArray(minH , hArr); //利用jquery方法找出数组元素对应的序号
+                $(value).css({
+                    'position' : 'absolute',
+                    'top' : minH + 'px',
+                    'left' : minHIndex*w + 'px'
+                });
+                console.log();
+                hArr[minHIndex] += h; //新增的内容层的高度 + hArr中最小的高度
+                _boxF.css('height',Math.max.apply(null , hArr) + 'px'); //为总的盒子添加一个最大的高度
+            }
+        });
+    }
+</script>
+</html>

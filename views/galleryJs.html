@@ -47,10 +47,39 @@
                     <img src="../imgs/logo.png" alt="">
                 </a>
             </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <!--<li>-->
+                <!--<a href="#">-->
+                <!--作品展示-->
+                <!--<span class="line"></span>-->
+                <!--</a>-->
+                <!--</li>-->
+            </ul>
         </div>
     </div>
 </div>
 <div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
     <div class="detailPage">
         <h2 class="mainTitle">
             利用js实现的走廊效果
@@ -234,7 +263,12 @@
         </div>
     </div>
 </div>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
 </body>
+<script src="../js/main.js" charset="utf-8"></script>
 <script type="text/javascript">
     layui.use('code', function(){ //加载code模块
         layui.code({
