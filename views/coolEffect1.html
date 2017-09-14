@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天室</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+    .thisCntBox {
+        width: 900px;
+        margin: 0 auto;
+        background-color: #000;
+        overflow: hidden;
+    }
+
+    .g-number-container {
+        position: relative;
+        margin-top: 10vh;
+        text-align: center;
+        -webkit-animation: rotateReverse 10s infinite linear;
+        animation: rotateReverse 10s infinite linear;
+        z-index: 999;
+    }
+
+    .g-number-rotate {
+        -webkit-transform: rotateX(10deg) rotateZ(0);
+        transform: rotateX(10deg) rotateZ(0);
+        -webkit-animation: rotate 10s infinite linear;
+        animation: rotate 10s infinite linear;
+    }
+
+    .preserve {
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        -webkit-perspective: 1000px;
+        perspective: 1000px;
+    }
+
+    .g-number {
+        position: relative;
+        width: 3vw;
+        height: 12vw;
+        display: inline-block;
+        margin: 3vw 3vw 0 0;
+    }
+    .g-number .g-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3vw;
+        height: 2px;
+        background: #181919;
+    }
+    .g-number .g-line:nth-child(1) {
+        -webkit-transform: translateY(-0.2vw);
+        transform: translateY(-0.2vw);
+    }
+    .g-number .g-line:nth-child(2) {
+        top: 3.2vw;
+    }
+    .g-number .g-line:nth-child(3) {
+        -webkit-transform: rotate(180deg) translateY(-0.2vw);
+        transform: rotate(180deg) translateY(-0.2vw);
+        top: 6.4vw;
+    }
+    .g-number .g-line:nth-child(4) {
+        -webkit-transform: rotate(90deg) translateY(0.2vw);
+        transform: rotate(90deg) translateY(0.2vw);
+        -webkit-transform-origin: 0 center;
+        transform-origin: 0 center;
+    }
+    .g-number .g-line:nth-child(5) {
+        -webkit-transform: rotate(-90deg) translateY(0.2vw);
+        transform: rotate(-90deg) translateY(0.2vw);
+        -webkit-transform-origin: 100% center;
+        transform-origin: 100% center;
+    }
+    .g-number .g-line:nth-child(6) {
+        top: 3.4vw;
+        -webkit-transform: rotate(90deg) translateY(0.2vw);
+        transform: rotate(90deg) translateY(0.2vw);
+        -webkit-transform-origin: 0 center;
+        transform-origin: 0 center;
+    }
+    .g-number .g-line:nth-child(7) {
+        top: 3.4vw;
+        -webkit-transform: rotate(-90deg) translateY(0.2vw);
+        transform: rotate(-90deg) translateY(0.2vw);
+        -webkit-transform-origin: 100% center;
+        transform-origin: 100% center;
+    }
+    .g-number .g-line::before,
+    .g-number .g-line::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background-color: #34eabc;
+        box-shadow: 0 0 1vw #0BFDFD, inset 0 0 0.125vmin #0BFDFD;
+    }
+    .g-number .g-line::before {
+        left: 0;
+        right: 50%;
+        -webkit-transition: all .5s ease-in;
+        transition: all .5s ease-in;
+    }
+    .g-number .g-line::after {
+        left: 50%;
+        right: 0;
+        -webkit-transition: all .5s ease-out;
+        transition: all .5s ease-out;
+    }
+    .g-number .translate::before, .g-number .translate::after {
+        -webkit-transform: translateZ(50px);
+        transform: translateZ(50px);
+    }
+
+    .g-comma {
+        position: relative;
+        top: -5.4vw;
+        display: inline-block;
+        width: 1vw;
+        height: 1vw;
+        background: #181919;
+        margin: 3vw 3vw 0 -0.8vw;
+    }
+    .g-comma::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #34eabc;
+        -webkit-transform: translateZ(50px);
+        transform: translateZ(50px);
+    }
+    .g-comma::after {
+        content: "";
+        position: absolute;
+        bottom: -.8vw;
+        right: .3vw;
+        border: .2vw solid transparent;
+        border-top: 0.9vw solid #34eabc;
+        -webkit-transform: translateZ(50px) rotate(40deg);
+        transform: translateZ(50px) rotate(40deg);
+    }
+
+    .g-number[data-digit="1"] .g-line:nth-child(1)::before,
+    .g-number[data-digit="1"] .g-line:nth-child(1)::after,
+    .g-number[data-digit="1"] .g-line:nth-child(2)::before,
+    .g-number[data-digit="1"] .g-line:nth-child(2)::after,
+    .g-number[data-digit="1"] .g-line:nth-child(3)::before,
+    .g-number[data-digit="1"] .g-line:nth-child(3)::after,
+    .g-number[data-digit="1"] .g-line:nth-child(4)::before,
+    .g-number[data-digit="1"] .g-line:nth-child(4)::after,
+    .g-number[data-digit="1"] .g-line:nth-child(6)::before,
+    .g-number[data-digit="1"] .g-line:nth-child(6)::after,
+    .g-number[data-digit="2"] .g-line:nth-child(4)::before,
+    .g-number[data-digit="2"] .g-line:nth-child(4)::after,
+    .g-number[data-digit="2"] .g-line:nth-child(7)::before,
+    .g-number[data-digit="2"] .g-line:nth-child(7)::after,
+    .g-number[data-digit="3"] .g-line:nth-child(4)::before,
+    .g-number[data-digit="3"] .g-line:nth-child(4)::after,
+    .g-number[data-digit="3"] .g-line:nth-child(6)::before,
+    .g-number[data-digit="3"] .g-line:nth-child(6)::after,
+    .g-number[data-digit="4"] .g-line:nth-child(1)::before,
+    .g-number[data-digit="4"] .g-line:nth-child(1)::after,
+    .g-number[data-digit="4"] .g-line:nth-child(3)::before,
+    .g-number[data-digit="4"] .g-line:nth-child(3)::after,
+    .g-number[data-digit="4"] .g-line:nth-child(6)::before,
+    .g-number[data-digit="4"] .g-line:nth-child(6)::after,
+    .g-number[data-digit="5"] .g-line:nth-child(5)::before,
+    .g-number[data-digit="5"] .g-line:nth-child(5)::after,
+    .g-number[data-digit="5"] .g-line:nth-child(6)::before,
+    .g-number[data-digit="5"] .g-line:nth-child(6)::after,
+    .g-number[data-digit="6"] .g-line:nth-child(5)::before,
+    .g-number[data-digit="6"] .g-line:nth-child(5)::after,
+    .g-number[data-digit="7"] .g-line:nth-child(2)::before,
+    .g-number[data-digit="7"] .g-line:nth-child(2)::after,
+    .g-number[data-digit="7"] .g-line:nth-child(3)::before,
+    .g-number[data-digit="7"] .g-line:nth-child(3)::after,
+    .g-number[data-digit="7"] .g-line:nth-child(4)::before,
+    .g-number[data-digit="7"] .g-line:nth-child(4)::after,
+    .g-number[data-digit="7"] .g-line:nth-child(6)::before,
+    .g-number[data-digit="7"] .g-line:nth-child(6)::after,
+    .g-number[data-digit="9"] .g-line:nth-child(6)::before,
+    .g-number[data-digit="9"] .g-line:nth-child(6)::after,
+    .g-number[data-digit="0"] .g-line:nth-child(2)::before,
+    .g-number[data-digit="0"] .g-line:nth-child(2)::after {
+        -webkit-transform: translateZ(25px);
+        transform: translateZ(25px);
+        background: #3c4444;
+        box-shadow: 0 0 1vw #425454;
+    }
+
+    /*@-webkit-keyframes rotate {*/
+        /*0% {*/
+            /*-webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);*/
+            /*transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);*/
+        /*}*/
+        /*50% {*/
+            /*-webkit-transform: rotateX(20deg) rotateY(40deg) rotateZ(180deg);*/
+            /*transform: rotateX(20deg) rotateY(40deg) rotateZ(180deg);*/
+        /*}*/
+        /*100% {*/
+            /*-webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(360deg);*/
+            /*transform: rotateX(0deg) rotateY(0deg) rotateZ(360deg);*/
+        /*}*/
+    /*}*/
+
+    /*@keyframes rotate {*/
+        /*0% {*/
+            /*-webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);*/
+            /*transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);*/
+        /*}*/
+        /*50% {*/
+            /*-webkit-transform: rotateX(20deg) rotateY(40deg) rotateZ(180deg);*/
+            /*transform: rotateX(20deg) rotateY(40deg) rotateZ(180deg);*/
+        /*}*/
+        /*100% {*/
+            /*-webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(360deg);*/
+            /*transform: rotateX(0deg) rotateY(0deg) rotateZ(360deg);*/
+        /*}*/
+    /*}*/
+    /*@-webkit-keyframes rotateReverse {*/
+        /*0% {*/
+            /*-webkit-transform: rotateZ(0deg);*/
+            /*transform: rotateZ(0deg);*/
+        /*}*/
+        /*100% {*/
+            /*-webkit-transform: rotateZ(-360deg);*/
+            /*transform: rotateZ(-360deg);*/
+        /*}*/
+    /*}*/
+    /*@keyframes rotateReverse {*/
+        /*0% {*/
+            /*-webkit-transform: rotateZ(0deg);*/
+            /*transform: rotateZ(0deg);*/
+        /*}*/
+        /*100% {*/
+            /*-webkit-transform: rotateZ(-360deg);*/
+            /*transform: rotateZ(-360deg);*/
+        /*}*/
+    /*}*/
+
+</style>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <!--<li>-->
+                <!--<a href="#">-->
+                <!--作品展示-->
+                <!--<span class="line"></span>-->
+                <!--</a>-->
+                <!--</li>-->
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            炫酷css效果
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                参考地址：<a target="_blank" href="http://www.cnblogs.com/coco1s/p/7443263.html">http://www.cnblogs.com/coco1s/p/7443263.html</a>
+            </p>
+            <p>
+                炫酷css效果
+            </p>
+            <div class="thisCntBox">
+                <div class="g-number-container vision preserve">
+                    <div class="g-number-rotate preserve">
+                        <div class="g-number preserve" data-digit="1">
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                        </div>
+                        <div class="g-number preserve" data-digit="2">
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                        </div>
+                        <div class="g-number preserve" data-digit="3">
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                        </div>
+                        <div class="g-number preserve" data-digit="4">
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                        </div>
+                        <div class="g-number preserve" data-digit="5">
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                        </div>
+                        <div class="g-number preserve" data-digit="6">
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                            <div class="g-line preserve translate"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '600px'
+        }); //引用code方法
+    });
+    'use strict';
+
+    $(function () {
+        var numbers = $('.g-number');
+
+        setInterval(function () {
+            Array.prototype.slice.call(numbers).forEach(function (key) {
+                $(key).attr('data-digit', parseInt(Math.random() * 9));
+            });
+        }, 2000);
+    });
+</script>
+</html>
