@@ -381,9 +381,11 @@ body{
     float: left;
     padding: 0 20px;
     margin: 10px 0;
-    color: #999;
     position: relative;
     border-right: 1px solid #ccc;
+}
+.essaysBox .title ul li a{
+    color: #999;
 }
 .essaysBox .title ul li:nth-last-of-type(1){
     border-right: 0;
@@ -401,7 +403,7 @@ body{
     opacity: 0;
     transition: .25s linear all;
 }
-.essaysBox .title ul li:hover{
+.essaysBox .title ul li:hover a{
     color: #333;
     transition: .25s linear all;
 }
@@ -410,7 +412,7 @@ body{
     opacity: 1;
     transition: .25s linear all;
 }
-.essaysBox .title ul .sel{
+.essaysBox .title ul .sel a{
     color: #333;
 }
 .essaysBox .title ul .sel::after{
@@ -432,7 +434,7 @@ body{
 }
 .essaysBox .cnt ul li{
     float: left;
-    width: 33.3%;
+    width: 24.95%;
 }
 .essaysBox .cnt ul li .c{
     line-height: 22px;
@@ -444,6 +446,10 @@ body{
 }
 .essaysBox .cnt ul li .ml{
     margin-left: 15px;
+}
+.mainHref{
+    text-decoration: underline;
+    color: #66ccff;
 }
 
 

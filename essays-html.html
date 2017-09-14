@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>随笔</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="css/index.css">
+    <!--layer插件-->
+    <!--<link rel="stylesheet" href="pubJs/layui/css/layui.css" />-->
+
+    <script src="pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="index.html">
+                    <img src="imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="blog.html">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="essays-js.html" class="sel">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="essaysBox">
+        <h3 class="mainTitle">简单却不简单...</h3>
+        <div class="title">
+            <ul class="clearfix">
+                <li>
+                    <a href="essays-js.html">js部分</a>
+                </li>
+                <li>
+                    <a href="essays-css.html">css部分</a>
+                </li>
+                <li class="sel">
+                    <a>html部分</a>
+                </li>
+                <li>
+                    <a href="essays-other.html">其他</a>
+                </li>
+            </ul>
+        </div>
+        <div class="cnt">
+            <ul class="clearfix allBox">
+                <!--<li>-->
+                    <!--<p class="c">-->
+                        <!--IE8下点击div的空白处，无法响应click事件-->
+                        <!--解决办法是给这个div添加一个背景颜色就可以解决了。-->
+                    <!--</p>-->
+                <!--</li>-->
+            </ul>
+        </div>
+    </div>
+</div>
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+<script src="js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    (function(){
+        waterfall({
+            boxC : $(".allBox li"), //内容层
+            boxF : $('.allBox') //总的盒子
+        });
+    })();
+    //当窗口改变时的监听函数jQuery
+    $(window).resize(function() {
+        waterfall({
+            boxC : $(".allBox li"), //内容层
+            boxF : $('.allBox') //总的盒子
+        });
+    });
+</script>
+</body>
+</html>
