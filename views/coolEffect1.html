@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>聊天室</title>
+    <title>3d时钟效果</title>
     <link rel="stylesheet" href="../css/index.css">
     <!--layer插件-->
     <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
@@ -13,241 +13,230 @@
     .thisCntBox {
         width: 900px;
         margin: 0 auto;
-        background-color: #000;
-        overflow: hidden;
+        background-color: #333;
+        /*overflow: hidden;*/
     }
-
-    .g-number-container {
-        position: relative;
-        margin-top: 10vh;
-        text-align: center;
-        -webkit-animation: rotateReverse 10s infinite linear;
-        animation: rotateReverse 10s infinite linear;
-        z-index: 999;
-    }
-
-    .g-number-rotate {
-        -webkit-transform: rotateX(10deg) rotateZ(0);
-        transform: rotateX(10deg) rotateZ(0);
-        -webkit-animation: rotate 10s infinite linear;
-        animation: rotate 10s infinite linear;
-    }
-
     .preserve {
         -webkit-transform-style: preserve-3d;
         transform-style: preserve-3d;
         -webkit-perspective: 1000px;
         perspective: 1000px;
     }
-
-    .g-number {
-        position: relative;
-        width: 3vw;
-        height: 12vw;
+    .rotate{
+        -webkit-transform: rotateX(10deg);
+        transform: rotateX(10deg);
+    }
+    .td_box{
+        padding: 2vw 0;
+    }
+    .td_box .number{
         display: inline-block;
-        margin: 3vw 3vw 0 0;
+        width: 3.5vw;
+        height: 7vw;
+        position: relative;
+        margin: 1vw .5vw;
     }
-    .g-number .g-line {
-        position: absolute;
-        top: 0;
-        left: 0;
+    .td_box .number .line{
         width: 3vw;
-        height: 2px;
-        background: #181919;
+        height: 3px;
+        background: rgba(102, 102, 102, 0.3);
+        border-radius: 15px;
+        position: absolute;
     }
-    .g-number .g-line:nth-child(1) {
+    /*基本的外形*/
+    /*上*/
+    .td_box .number .line:nth-of-type(1){
         -webkit-transform: translateY(-0.2vw);
         transform: translateY(-0.2vw);
     }
-    .g-number .g-line:nth-child(2) {
+    /*中*/
+    .td_box .number .line:nth-of-type(2){
         top: 3.2vw;
     }
-    .g-number .g-line:nth-child(3) {
+    /*下*/
+    .td_box .number .line:nth-of-type(3){
         -webkit-transform: rotate(180deg) translateY(-0.2vw);
         transform: rotate(180deg) translateY(-0.2vw);
         top: 6.4vw;
     }
-    .g-number .g-line:nth-child(4) {
+    /*左上*/
+    .td_box .number .line:nth-of-type(4){
         -webkit-transform: rotate(90deg) translateY(0.2vw);
         transform: rotate(90deg) translateY(0.2vw);
         -webkit-transform-origin: 0 center;
         transform-origin: 0 center;
     }
-    .g-number .g-line:nth-child(5) {
+    /*右上*/
+    .td_box .number .line:nth-of-type(5){
         -webkit-transform: rotate(-90deg) translateY(0.2vw);
         transform: rotate(-90deg) translateY(0.2vw);
         -webkit-transform-origin: 100% center;
         transform-origin: 100% center;
     }
-    .g-number .g-line:nth-child(6) {
+    /*左下*/
+    .td_box .number .line:nth-of-type(6){
         top: 3.4vw;
         -webkit-transform: rotate(90deg) translateY(0.2vw);
         transform: rotate(90deg) translateY(0.2vw);
         -webkit-transform-origin: 0 center;
         transform-origin: 0 center;
     }
-    .g-number .g-line:nth-child(7) {
+    /*右下*/
+    .td_box .number .line:nth-of-type(7){
         top: 3.4vw;
         -webkit-transform: rotate(-90deg) translateY(0.2vw);
         transform: rotate(-90deg) translateY(0.2vw);
         -webkit-transform-origin: 100% center;
         transform-origin: 100% center;
     }
-    .g-number .g-line::before,
-    .g-number .g-line::after {
+
+    /*利用before和after进行改进!!*/
+    .td_box .number .line::before,.td_box .number .line::after{
         content: "";
         position: absolute;
         top: 0;
         bottom: 0;
-        background-color: #34eabc;
-        box-shadow: 0 0 1vw #0BFDFD, inset 0 0 0.125vmin #0BFDFD;
+        background-color: #66ffcc;
+        box-shadow: 0 0 1vw #00ad80, inset 0 0 0.125vmin #66ffcc;
+        -webkit-transform: translateZ(50px);
+        transform: translateZ(50px);
+        border-radius: 15px;
     }
-    .g-number .g-line::before {
+    .td_box .number .line::before{
         left: 0;
         right: 50%;
         -webkit-transition: all .5s ease-in;
         transition: all .5s ease-in;
+        /*margin: 0 1% 0 0;*/
+
     }
-    .g-number .g-line::after {
+    .td_box .number .line::after{
         left: 50%;
         right: 0;
         -webkit-transition: all .5s ease-out;
         transition: all .5s ease-out;
     }
-    .g-number .translate::before, .g-number .translate::after {
-        -webkit-transform: translateZ(50px);
-        transform: translateZ(50px);
-    }
 
-    .g-comma {
-        position: relative;
-        top: -5.4vw;
-        display: inline-block;
-        width: 1vw;
-        height: 1vw;
-        background: #181919;
-        margin: 3vw 3vw 0 -0.8vw;
-    }
-    .g-comma::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #34eabc;
-        -webkit-transform: translateZ(50px);
-        transform: translateZ(50px);
-    }
-    .g-comma::after {
-        content: "";
-        position: absolute;
-        bottom: -.8vw;
-        right: .3vw;
-        border: .2vw solid transparent;
-        border-top: 0.9vw solid #34eabc;
-        -webkit-transform: translateZ(50px) rotate(40deg);
-        transform: translateZ(50px) rotate(40deg);
-    }
-
-    .g-number[data-digit="1"] .g-line:nth-child(1)::before,
-    .g-number[data-digit="1"] .g-line:nth-child(1)::after,
-    .g-number[data-digit="1"] .g-line:nth-child(2)::before,
-    .g-number[data-digit="1"] .g-line:nth-child(2)::after,
-    .g-number[data-digit="1"] .g-line:nth-child(3)::before,
-    .g-number[data-digit="1"] .g-line:nth-child(3)::after,
-    .g-number[data-digit="1"] .g-line:nth-child(4)::before,
-    .g-number[data-digit="1"] .g-line:nth-child(4)::after,
-    .g-number[data-digit="1"] .g-line:nth-child(6)::before,
-    .g-number[data-digit="1"] .g-line:nth-child(6)::after,
-    .g-number[data-digit="2"] .g-line:nth-child(4)::before,
-    .g-number[data-digit="2"] .g-line:nth-child(4)::after,
-    .g-number[data-digit="2"] .g-line:nth-child(7)::before,
-    .g-number[data-digit="2"] .g-line:nth-child(7)::after,
-    .g-number[data-digit="3"] .g-line:nth-child(4)::before,
-    .g-number[data-digit="3"] .g-line:nth-child(4)::after,
-    .g-number[data-digit="3"] .g-line:nth-child(6)::before,
-    .g-number[data-digit="3"] .g-line:nth-child(6)::after,
-    .g-number[data-digit="4"] .g-line:nth-child(1)::before,
-    .g-number[data-digit="4"] .g-line:nth-child(1)::after,
-    .g-number[data-digit="4"] .g-line:nth-child(3)::before,
-    .g-number[data-digit="4"] .g-line:nth-child(3)::after,
-    .g-number[data-digit="4"] .g-line:nth-child(6)::before,
-    .g-number[data-digit="4"] .g-line:nth-child(6)::after,
-    .g-number[data-digit="5"] .g-line:nth-child(5)::before,
-    .g-number[data-digit="5"] .g-line:nth-child(5)::after,
-    .g-number[data-digit="5"] .g-line:nth-child(6)::before,
-    .g-number[data-digit="5"] .g-line:nth-child(6)::after,
-    .g-number[data-digit="6"] .g-line:nth-child(5)::before,
-    .g-number[data-digit="6"] .g-line:nth-child(5)::after,
-    .g-number[data-digit="7"] .g-line:nth-child(2)::before,
-    .g-number[data-digit="7"] .g-line:nth-child(2)::after,
-    .g-number[data-digit="7"] .g-line:nth-child(3)::before,
-    .g-number[data-digit="7"] .g-line:nth-child(3)::after,
-    .g-number[data-digit="7"] .g-line:nth-child(4)::before,
-    .g-number[data-digit="7"] .g-line:nth-child(4)::after,
-    .g-number[data-digit="7"] .g-line:nth-child(6)::before,
-    .g-number[data-digit="7"] .g-line:nth-child(6)::after,
-    .g-number[data-digit="9"] .g-line:nth-child(6)::before,
-    .g-number[data-digit="9"] .g-line:nth-child(6)::after,
-    .g-number[data-digit="0"] .g-line:nth-child(2)::before,
-    .g-number[data-digit="0"] .g-line:nth-child(2)::after {
+    /*当数字为0->9时的变化*/
+    .td_box .number[data-num="1"] .line:nth-of-type(1)::before,
+    .td_box .number[data-num="1"] .line:nth-of-type(1)::after,
+    .td_box .number[data-num="1"] .line:nth-of-type(2)::before,
+    .td_box .number[data-num="1"] .line:nth-of-type(2)::after,
+    .td_box .number[data-num="1"] .line:nth-of-type(3)::before,
+    .td_box .number[data-num="1"] .line:nth-of-type(3)::after,
+    .td_box .number[data-num="1"] .line:nth-of-type(4)::before,
+    .td_box .number[data-num="1"] .line:nth-of-type(4)::after,
+    .td_box .number[data-num="1"] .line:nth-of-type(6)::before,
+    .td_box .number[data-num="1"] .line:nth-of-type(6)::after,
+    .td_box .number[data-num="2"] .line:nth-of-type(4)::before,
+    .td_box .number[data-num="2"] .line:nth-of-type(4)::after,
+    .td_box .number[data-num="2"] .line:nth-of-type(7)::before,
+    .td_box .number[data-num="2"] .line:nth-of-type(7)::after,
+    .td_box .number[data-num="3"] .line:nth-of-type(4)::before,
+    .td_box .number[data-num="3"] .line:nth-of-type(4)::after,
+    .td_box .number[data-num="3"] .line:nth-of-type(6)::before,
+    .td_box .number[data-num="3"] .line:nth-of-type(6)::after,
+    .td_box .number[data-num="4"] .line:nth-of-type(1)::before,
+    .td_box .number[data-num="4"] .line:nth-of-type(1)::after,
+    .td_box .number[data-num="4"] .line:nth-of-type(3)::before,
+    .td_box .number[data-num="4"] .line:nth-of-type(3)::after,
+    .td_box .number[data-num="4"] .line:nth-of-type(6)::before,
+    .td_box .number[data-num="4"] .line:nth-of-type(6)::after,
+    .td_box .number[data-num="5"] .line:nth-of-type(5)::before,
+    .td_box .number[data-num="5"] .line:nth-of-type(5)::after,
+    .td_box .number[data-num="5"] .line:nth-of-type(6)::before,
+    .td_box .number[data-num="5"] .line:nth-of-type(6)::after,
+    .td_box .number[data-num="6"] .line:nth-of-type(5)::before,
+    .td_box .number[data-num="6"] .line:nth-of-type(5)::after,
+    .td_box .number[data-num="7"] .line:nth-of-type(2)::before,
+    .td_box .number[data-num="7"] .line:nth-of-type(2)::after,
+    .td_box .number[data-num="7"] .line:nth-of-type(3)::before,
+    .td_box .number[data-num="7"] .line:nth-of-type(3)::after,
+    .td_box .number[data-num="7"] .line:nth-of-type(4)::before,
+    .td_box .number[data-num="7"] .line:nth-of-type(4)::after,
+    .td_box .number[data-num="7"] .line:nth-of-type(6)::before,
+    .td_box .number[data-num="7"] .line:nth-of-type(6)::after,
+    .td_box .number[data-num="9"] .line:nth-of-type(6)::before,
+    .td_box .number[data-num="9"] .line:nth-of-type(6)::after,
+    .td_box .number[data-num="0"] .line:nth-of-type(2)::before,
+    .td_box .number[data-num="0"] .line:nth-of-type(2)::after{
         -webkit-transform: translateZ(25px);
         transform: translateZ(25px);
-        background: #3c4444;
-        box-shadow: 0 0 1vw #425454;
+        background-color: rgba(153, 153, 153, 0.5);
+        box-shadow: none;
     }
 
-    /*@-webkit-keyframes rotate {*/
-        /*0% {*/
-            /*-webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);*/
-            /*transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);*/
-        /*}*/
-        /*50% {*/
-            /*-webkit-transform: rotateX(20deg) rotateY(40deg) rotateZ(180deg);*/
-            /*transform: rotateX(20deg) rotateY(40deg) rotateZ(180deg);*/
-        /*}*/
-        /*100% {*/
-            /*-webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(360deg);*/
-            /*transform: rotateX(0deg) rotateY(0deg) rotateZ(360deg);*/
-        /*}*/
-    /*}*/
+    /*时间中间的间隔*/
+    .td_box .spacing{
+        display: inline-block;
+        width: 3.5vw;
+        height: 7vw;
+        position: relative;
+        margin: 1vw .5vw;
+    }
+    .td_box .spacing .line{
+        width: 3vw;
+        height: 3px;
+        /*background: rgba(238, 238, 238, 0.3);*/
+        transform: translateY(3.2vw);
+        position: relative;
+    }
+    .td_box .spacing .line::after{
+        content: '';
+        position: absolute;
+        height: 3px;
+        width: 40%;
+        top: -13px;
+        right: 12px;
+        background-color: #66ffcc;
+        box-shadow: 0 0 1vw #00ad80, inset 0 0 0.125vmin #66ffcc;
+        transform: translateZ(50px);
+        animation: breathe linear 1s infinite ;
+        -webkit-animation: breathe linear 2s infinite ;
+    }
+    .td_box .spacing .line::before{
+        content: '';
+        position: absolute;
+        width: 40%;
+        height: 3px;
+        top: 13px;
+        right: 12px;
+        background-color: #66ffcc;
+        box-shadow: 0 0 1vw #00ad80, inset 0 0 0.125vmin #66ffcc;
+        transform: translateZ(50px);
+        animation: breathe linear 1s infinite ;
+        -webkit-animation: breathe linear 2s infinite ;
+    }
 
-    /*@keyframes rotate {*/
-        /*0% {*/
-            /*-webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);*/
-            /*transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);*/
-        /*}*/
-        /*50% {*/
-            /*-webkit-transform: rotateX(20deg) rotateY(40deg) rotateZ(180deg);*/
-            /*transform: rotateX(20deg) rotateY(40deg) rotateZ(180deg);*/
-        /*}*/
-        /*100% {*/
-            /*-webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(360deg);*/
-            /*transform: rotateX(0deg) rotateY(0deg) rotateZ(360deg);*/
-        /*}*/
-    /*}*/
-    /*@-webkit-keyframes rotateReverse {*/
-        /*0% {*/
-            /*-webkit-transform: rotateZ(0deg);*/
-            /*transform: rotateZ(0deg);*/
-        /*}*/
-        /*100% {*/
-            /*-webkit-transform: rotateZ(-360deg);*/
-            /*transform: rotateZ(-360deg);*/
-        /*}*/
-    /*}*/
-    /*@keyframes rotateReverse {*/
-        /*0% {*/
-            /*-webkit-transform: rotateZ(0deg);*/
-            /*transform: rotateZ(0deg);*/
-        /*}*/
-        /*100% {*/
-            /*-webkit-transform: rotateZ(-360deg);*/
-            /*transform: rotateZ(-360deg);*/
-        /*}*/
-    /*}*/
-
+    /*间隔的闪烁动画*/
+    @-webkit-keyframes breathe {
+        0%{
+            background-color: #66ffcc;
+            box-shadow: 0 0 1vw #00ad80, inset 0 0 0.125vmin #66ffcc;
+        }
+        50%{
+            background-color: rgba(102, 255, 204, 0.1);
+            box-shadow: 0 0 1vw rgba(0, 173, 128, 0.1), inset 0 0 0.125vmin rgba(102, 255, 204, 0.1);
+        }
+        100%{
+            background-color: #66ffcc;
+            box-shadow: 0 0 1vw #00ad80, inset 0 0 0.125vmin #66ffcc;
+        }
+    }
+    @keyframes breathe {
+        0%{
+            background-color: #66ffcc;
+            box-shadow: 0 0 1vw #00ad80, inset 0 0 0.125vmin #66ffcc;
+        }
+        50%{
+            background-color: rgba(102, 255, 204, 0.1);
+            box-shadow: 0 0 1vw rgba(0, 173, 128, 0.1), inset 0 0 0.125vmin rgba(102, 255, 204, 0.1);
+        }
+        100%{
+            background-color: #66ffcc;
+            box-shadow: 0 0 1vw #00ad80, inset 0 0 0.125vmin #66ffcc;
+        }
+    }
 </style>
 <body>
 <div class="container">
@@ -294,71 +283,129 @@
     </div>
     <div class="detailPage">
         <h2 class="mainTitle">
-            炫酷css效果
+            炫酷3d时钟效果
         </h2>
         <div class="mainContent">
             <p class="describeTit">
                 参考地址：<a target="_blank" href="http://www.cnblogs.com/coco1s/p/7443263.html">http://www.cnblogs.com/coco1s/p/7443263.html</a>
             </p>
             <p>
-                炫酷css效果
+                在原有的基础上进行了修改，将其设定为时钟的形象
+                （如果没有效果，请用最新版的谷歌浏览器观看），
+                代码的话直接ctrl+u查看源代码，就不在贴出来了，绝不是因为懒...
             </p>
-            <div class="thisCntBox">
-                <div class="g-number-container vision preserve">
-                    <div class="g-number-rotate preserve">
-                        <div class="g-number preserve" data-digit="1">
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                        </div>
-                        <div class="g-number preserve" data-digit="2">
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                        </div>
-                        <div class="g-number preserve" data-digit="3">
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                        </div>
-                        <div class="g-number preserve" data-digit="4">
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                        </div>
-                        <div class="g-number preserve" data-digit="5">
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                        </div>
-                        <div class="g-number preserve" data-digit="6">
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
-                            <div class="g-line preserve translate"></div>
+            <p>效果展示：</p>
+            <div class="thisCntBox t-c">
+                <div class="td_box " style="z-index: 999;">
+                    <div class="preserve">
+                        <div class="preserve rotate">
+                            <!--时-->
+                            <div class="number preserve" data-num="0">
+                                <!-- 上 -->
+                                <div class="line preserve"></div>
+                                <!-- 中间 -->
+                                <div class="line preserve"></div>
+                                <!-- 下 -->
+                                <div class="line preserve"></div>
+                                <!-- 左上 -->
+                                <div class="line preserve"></div>
+                                <!-- 右上 -->
+                                <div class="line preserve"></div>
+                                <!-- 左下 -->
+                                <div class="line preserve"></div>
+                                <!-- 右下 -->
+                                <div class="line preserve"></div>
+                            </div>
+                            <div class="number preserve" data-num="0">
+                                <!-- 上 -->
+                                <div class="line preserve"></div>
+                                <!-- 中间 -->
+                                <div class="line preserve"></div>
+                                <!-- 下 -->
+                                <div class="line preserve"></div>
+                                <!-- 左上 -->
+                                <div class="line preserve"></div>
+                                <!-- 右上 -->
+                                <div class="line preserve"></div>
+                                <!-- 左下 -->
+                                <div class="line preserve"></div>
+                                <!-- 右下 -->
+                                <div class="line preserve"></div>
+                            </div>
+                            <div class="spacing preserve">
+                                <!-- 上 -->
+                                <div class="line preserve"></div>
+                            </div>
+                            <!--分-->
+                            <div class="number preserve" data-num="0">
+                                <!-- 上 -->
+                                <div class="line preserve"></div>
+                                <!-- 中间 -->
+                                <div class="line preserve"></div>
+                                <!-- 下 -->
+                                <div class="line preserve"></div>
+                                <!-- 左上 -->
+                                <div class="line preserve"></div>
+                                <!-- 右上 -->
+                                <div class="line preserve"></div>
+                                <!-- 左下 -->
+                                <div class="line preserve"></div>
+                                <!-- 右下 -->
+                                <div class="line preserve"></div>
+                            </div>
+                            <div class="number preserve" data-num="0">
+                                <!-- 上 -->
+                                <div class="line preserve"></div>
+                                <!-- 中间 -->
+                                <div class="line preserve"></div>
+                                <!-- 下 -->
+                                <div class="line preserve"></div>
+                                <!-- 左上 -->
+                                <div class="line preserve"></div>
+                                <!-- 右上 -->
+                                <div class="line preserve"></div>
+                                <!-- 左下 -->
+                                <div class="line preserve"></div>
+                                <!-- 右下 -->
+                                <div class="line preserve"></div>
+                            </div>
+                            <div class="spacing preserve">
+                                <!-- 上 -->
+                                <div class="line preserve"></div>
+                            </div>
+                            <!--秒-->
+                            <div class="number preserve" data-num="0">
+                                <!-- 上 -->
+                                <div class="line preserve"></div>
+                                <!-- 中间 -->
+                                <div class="line preserve"></div>
+                                <!-- 下 -->
+                                <div class="line preserve"></div>
+                                <!-- 左上 -->
+                                <div class="line preserve"></div>
+                                <!-- 右上 -->
+                                <div class="line preserve"></div>
+                                <!-- 左下 -->
+                                <div class="line preserve"></div>
+                                <!-- 右下 -->
+                                <div class="line preserve"></div>
+                            </div>
+                            <div class="number preserve" data-num="0">
+                                <!-- 上 -->
+                                <div class="line preserve"></div>
+                                <!-- 中间 -->
+                                <div class="line preserve"></div>
+                                <!-- 下 -->
+                                <div class="line preserve"></div>
+                                <!-- 左上 -->
+                                <div class="line preserve"></div>
+                                <!-- 右上 -->
+                                <div class="line preserve"></div>
+                                <!-- 左下 -->
+                                <div class="line preserve"></div>
+                                <!-- 右下 -->
+                                <div class="line preserve"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -373,22 +420,27 @@
 </body>
 <script src="../js/main.js" charset="utf-8"></script>
 <script type="text/javascript">
-    layui.use('code', function(){ //加载code模块
-        layui.code({
-            encode: true //是否转义html标签。默认不开启
-            ,height: '600px'
-        }); //引用code方法
-    });
     'use strict';
-
     $(function () {
-        var numbers = $('.g-number');
-
-        setInterval(function () {
-            Array.prototype.slice.call(numbers).forEach(function (key) {
-                $(key).attr('data-digit', parseInt(Math.random() * 9));
-            });
-        }, 2000);
+        var listNum = $('.td_box .number');
+        getNowTime(listNum); //先进行时间的初始化
+        setInterval(function(){
+            getNowTime(listNum);
+        },1000);
     });
+    function getNowTime(listNum){
+        var myDate = new Date();
+        var h = myDate.getHours() ;//获取当前小时数(0-23)
+        var m = myDate.getMinutes();//获取当前分钟数(0-59)
+        var s = myDate.getSeconds();     //获取当前秒数(0-59)
+        var arr = [
+            Math.floor(h/10),h%10, //时
+            Math.floor(m/10),m%10, //分
+            Math.floor(s/10),s%10  //秒
+        ];
+        $.each(listNum,function (i) {
+            $(listNum[i]).attr('data-num', arr[i]);
+        });
+    }
 </script>
 </html>
