@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jQuery源码解读</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            jQuery源码解读
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                本身资历尚浅，无法深入对jQuery进行解读，而且网上也有很多jQuery的解读资料，
+                所以本篇文章只是作为我这几天所解读出来知识的总结（或者笔记...）
+            </p>
+            <p>
+                我觉得解读一个东西最主要的是找对思路，jQuery9000多行的源码代码要是逐字逐句
+                理解的话我想没有多少人能够坚持下来，而且开头的变量，正则和方法如果开始时绝对
+                很难理解。所以先了解jQuery的整体结构，从整体结构中去分析自己想要去解读的部分。
+                以下是我在网上找寻一张的jQuery的整体结构图:
+            </p>
+            <p class="t-c">
+                <img src="../imgs/jQuery1.png" alt="">
+            </p>
+            <p class="title">
+                jQuery 闭包结构及特色的调用方法
+            </p>
+            <p>
+                为了防止变量冲突和全局作用域污染，jQuery 的被包含在一个立即执行的函数构造的闭包中
+                ，只在后面暴露 $ 和 jQuery 这 2 个变量给外界，其写法为：
+            </p>
+<pre class="layui-code" lay-title="js代码">
+  (function(window，undefined) {
+   // JS代码
+  })(window);
+</pre>
+            <p>
+                这里值得注意的是获取的参数有undefined，但却并没有传入undefined,其原因是在早期的运行
+                环境中（pre-ES5，eg. Internet Explorer 8），undefined 仅是一个变量且它的值是可以被覆盖的。
+                即你可以这样操作：
+            </p>
+<pre class="layui-code" lay-title="js代码">
+    var undefined = 'qqq';
+    console.log(undefined); // 'qqq'
+</pre>
+            <p>
+                <a href="http://www.cnblogs.com/coco1s/p/5261646.html" class="mainHref" target="_blank">参考链接</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '600px'
+        }); //引用code方法
+    });
+</script>
+</html>

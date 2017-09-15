@@ -321,8 +321,13 @@ body{
     font-weight: 600;
     color: #333;
 }
+.mainContent .title{
+    text-indent: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
 .mainContent .describeTit{
-    padding: 8px 0;
+    padding: 8px 10px;
     margin-bottom: 15px;
     border-left: 4px solid;
     color:  #66ccff;
