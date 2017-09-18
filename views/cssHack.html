@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS hack</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            css hack IE浏览器兼容性处理
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                目前ie内核浏览器仍然为国内的主流浏览器，所以前端工作者都必须去面对和解决的一个
+                问题就是ie代码的兼容性(╯｀д′)╯┴—┴，在有需求的情况下我们需要专门针对IE写
+                对应的css样式，即IE的 css hack。
+            </p>
+            <p class="title">
+                常见特殊标识符的应用：
+            </p>
+            <p>
+                可以用一个表格进行概括(其中S表示Standards Mode即标准模式，Q表示Quirks Mode，即兼容模式)：
+            </p>
+            <table class="mainTable">
+                <tr>
+                    <th>hack</th>
+                    <th>示例</th>
+                    <th>ie6(S)</th>
+                    <th>ie6(Q)</th>
+                    <th>ie7(S)</th>
+                    <th>ie7(Q)</th>
+                    <th>ie8(S)</th>
+                    <th>ie8(Q)</th>
+                </tr>
+                <tr>
+                    <td>*</td>
+                    <td>*color</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>+</td>
+                    <td>+color</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-color</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td>_</td>
+                    <td>_color</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>#</td>
+                    <td>#color</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>\0</td>
+                    <td>color\0</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td>\9</td>
+                    <td>color\0</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>!important</td>
+                    <td>color:red!important;</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <p class="title">
+                条件注释语句：
+            </p>
+<pre class="layui-code" lay-title="代码">
+    1. <!--[if !IE]> 除IE外都可识别 <!--<![endif]-->
+    2. <!--[if IE]> 所有的IE可识别 <![endif]-->
+    3. <!--[if IE 5.0]> 只有IE5.0可以识别 <![endif]-->
+    4. <!--[if IE 5]> 仅IE5.0与IE5.5可以识别 <![endif]-->
+    5. <!--[if gt IE 5.0]> IE5.0以及IE5.0以上版本都可以识别 <![endif]-->
+    6. <!--[if IE 6]> 仅IE6可识别 <![endif]-->
+    7. <!--[if lt IE 6]> IE6以及IE6以下版本可识别 <![endif]-->
+    8. <!--[if gte IE 6]> IE6以及IE6以上版本可识别 <![endif]-->
+    9. <!--[if IE 7]> 仅IE7可识别 <![endif]-->
+    10. <!--[if lt IE 7]> IE7以及IE7以下版本可识别 <![endif]-->
+    11. <!--[if gte IE 7]> IE7以及IE7以上版本可识别<![endif]-->
+</pre>
+            <p>
+                其中lt 表示less than 当前条件版本以下的版本，不包含当前版本。
+                gte 表示greeter than or equal 当前版本以上版本，并包含当前版本。
+                lte 表示less than or equal 当前版本以下版本，并包含当前版本。
+            </p>
+            <p class="title">meta声明</p>
+            <p>
+                由于IE8 可能会将页面按照 IE7 模式进行渲染，针对 多版本IE的现状，
+                通常会采用设置 X-UA-Compatible HTTP 头的方式将页面在IE中采用统一的渲染模式。
+            </p>
+<pre class="layui-code" lay-title="代码">
+    <meta http-equiv="X-UA-Compatible" content="IE=7">
+    // 以上代码告诉IE浏览器，无论是否用DTD声明文档标准，IE8/9都会以IE7引擎来渲染页面。
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    // 以上代码告诉IE浏览器，IE8/9都会以IE8引擎来渲染页面。
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    // 以上代码告诉IE浏览器，IE8/9及以后的版本都会以最高版本IE来渲染页面。
+    <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+    <meta http-equiv="X-UA-Compatible" content="IE=7,9">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    // 以上代码IE=edge告诉IE使用最新的引擎渲染网页，chrome=1则可以激活Chrome Frame.
+</pre>
+        </div>
+    </div>
+</div>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '600px'
+        }); //引用code方法
+    });
+</script>
+</html>
