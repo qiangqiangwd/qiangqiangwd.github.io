@@ -384,14 +384,14 @@
                         if(dirs=='left'||dirs=='right'){
                             moveInC.eq(num).css(inOutMove[dirs]).animate({
                                 left:'0%'
-                            },250);
+                            },150);
                         }else{
                             moveInC.eq(num).css(inOutMove[dirs]).animate({
                                 top:'0%'
-                            },250);
+                            },150);
                         }
                     }else{
-                        moveInC.eq(num).css({top:'0%',left:'0%'}).animate(inOutMove[dirs],250);
+                        moveInC.eq(num).css({top:'0%',left:'0%'}).animate(inOutMove[dirs],150);
                     }
                 }
             };

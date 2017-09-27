@@ -68,9 +68,9 @@
                     <p class="c">
                         超出部分省略号隐藏：<br>
                         display: block;<br>
-                        white-space: nowrap;<br>
+                        white-space: nowrap;/*文字不换行*/<br>
                         overflow: hidden;<br>
-                        text-overflow: ellipsis;
+                        text-overflow: ellipsis;/*超出省略号*/
                     </p>
                 </li>
                 <li>
@@ -134,6 +134,19 @@
                         <span class="ml">border-collapse: collapse;</span><br>
                         <span class="ml">border-spacing: 0;</span><br>
                         }
+                    </p>
+                </li>
+                <li>
+                    <p class="c">
+                    pointer-events:none;应用了该属性后，譬如鼠标点击，hover 等功能都将失效，即是元素不会成为鼠标事件的 target。
+                    </p>
+                </li>
+                <li>
+                    <p class="c">
+                        实用技能：
+                        <a class="mainHref" target="_blank" href="http://www.zhangxinxu.com/wordpress/2010/11/%E6%8B%9C%E6%8B%9C%E4%BA%86%E6%B5%AE%E5%8A%A8%E5%B8%83%E5%B1%80-%E5%9F%BA%E4%BA%8Edisplayinline-block%E7%9A%84%E5%88%97%E8%A1%A8%E5%B8%83%E5%B1%80/">
+                            使用 inline-block 布局替换 float 布局
+                        </a>
                     </p>
                 </li>
             </ul>

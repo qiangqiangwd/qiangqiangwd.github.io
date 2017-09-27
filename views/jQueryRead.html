@@ -86,6 +86,21 @@
     console.log(undefined); // 'qqq'
 </pre>
             <p>
+                在我们实例化一个 jQuery 对象的时候，我们会发现无论是有无 new 构造都可以调用 jQuery 的方法
+            </p>
+<pre class="layui-code" lay-title="js代码">
+    //无 new 构造
+    $('.n').next();
+    <br>
+    //有 new 构造
+    var n = new $('.n');
+    n.next();
+</pre>
+            <p>
+                大部分人使用的都是$('')的形式进行构造，当我们使用这种便捷的方式的时候，其本质上就相当于 new jQuery()，
+                而这种方法在jQuery 内部是如何实现的呢...
+            </p>
+            <p>
                 <a href="http://www.cnblogs.com/coco1s/p/5261646.html" class="mainHref" target="_blank">参考链接</a><br>
                 <a href="862983345@qq.com" class="mainHref">862983345@qq.com</a><br>
             </p>
@@ -101,8 +116,8 @@
 <script type="text/javascript">
     layui.use('code', function(){ //加载code模块
         layui.code({
-            encode: true //是否转义html标签。默认不开启
-            ,height: '600px'
+//            encode: true //是否转义html标签。默认不开启
+            height: '600px'
         }); //引用code方法
     });
 </script>
