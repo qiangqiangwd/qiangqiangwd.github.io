@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS Shapes</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+    <!--图片放大-->
+    <script src="../pubJs/zooming.min.js" charset="utf-8"></script>
+    <!--图片懒加载-->
+    <script src="../pubJs/EasyLazyload.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+    .banBox{
+        width: 100%;
+        border: 1px solid;
+        overflow-x: auto;
+        background: #00ad80;
+    }
+    .ieDemo{
+        /*overflow: hidden;*/
+        /*text-align: justify;*/
+        white-space:nowrap;
+        font-size: 0;
+        letter-spacing: -5px;
+    }
+    .ieDemo li{
+        /*float: left;*/
+        width: 100%;
+        padding: 10px 0;
+        display: inline-block;
+        text-align: center;
+        font-size: 14px;
+        /*padding: 10px;*/
+        border-bottom: 1px solid #333;
+        box-shadow: 1px 0 0 #000;
+    }
+</style>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            原型链prototype与__proto__的区别和关系
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                原型链prototype与__proto__的区别和关系
+            </p>
+            <p>效果：
+            </p>
+<pre class="layui-code" lay-title="代码">
+
+</pre>
+
+
+
+        </div>
+    </div>
+</div>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '600px'
+        }); //引用code方法
+    });
+</script>
+</html>
