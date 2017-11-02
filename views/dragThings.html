@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>拖拽事物</title>
+    <!--<link rel="stylesheet" href="../css/index.css">-->
+</head>
+<style type="text/css">
+    .moveBox{
+        width: 100px;
+        /*height: 100px;*/
+        /*background: #333;*/
+        /*position: absolute;*/
+        /*top: 100px;*/
+        /*left: 100px;*/
+        color: #333;
+        padding: 15px;
+        border: 1px solid;
+    }
+    .noselect {
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Chrome/Safari/Opera */
+        -khtml-user-select: none; /* Konqueror */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currentlynot supported by any browser */
+    }
+</style>
+<body>
+    <div class="moveBox noselect" id="moveBox">
+        <ol>
+            <li>kk</li>
+            <li>kk</li>
+            <li>kk</li>
+        </ol>
+    </div>
+    <script type="text/javascript">
+        ;(function(window,undefined){
+            var dragThing = function(elem,opts){
+              return  new dragThing.prototype.init(elem,opts);
+            };
+
+            dragThing.fn = dragThing.prototype = {
+              init : function(elem,opts){
+                  var opt = opts || {} //获取设定的参数
+                     ,e = this.getId(elem || '') //获取拖拽的对象，id+字符串的形式
+                     ;
+
+                  //检查对象是否存在
+                  if(e){
+                      e.style.position = 'absolute';
+                      //进行操作（点击对象再拖动）
+                      this.mouseEvent(e);
+                  }
+              },
+               //由id获取当前的节点
+              getId : function(elem){
+                  return document.getElementById(elem);
+              },
+              //当鼠标移入时的操作
+              mouseEvent : function(e){
+                    var _this = this,flag = true;
+                  //鼠标点击时
+                  e.onmousedown = function(){
+                      var ele = arguments[0] || window.event
+                           //获取点击时相鼠标对于对象内的坐标
+                           ,x = ele.clientX - this.offsetLeft
+                           ,y = ele.clientY - this.offsetTop;
+                      //鼠标拖动时
+                      this.onmousemove = function(){
+                          var args = arguments[0] || window.event;
+                          //注：clientX为获得鼠标相对于body定位的横标值；
+                          // offsetLeft/获得对象相对于页面的横坐标值
+                          e.style.top = (args.clientY-y)+'px';
+                          e.style.left = (args.clientX-x)+'px';
+
+                      };
+                  };
+                  //当松开时停止移动
+                  e.onmouseup = function(){
+                      this.onmousemove = false;
+                  };
+                  //当离开时停止移动
+                  e.onmouseout = function(){
+                     this.onmousemove = false;
+                  };
+              }
+            };
+
+            dragThing.fn.init.prototype = dragThing.fn;
+            window.dragThing = dragThing;
+        })(window);
+
+        //调用
+        dragThing('moveBox');
+    </script>
+</body>
+</html>

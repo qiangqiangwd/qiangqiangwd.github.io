@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>jQuery源码解读</title>
+    <title>jQuery源码部分解读</title>
     <link rel="stylesheet" href="../css/index.css">
     <!--layer插件-->
     <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
@@ -48,7 +48,7 @@
     </div>
     <div class="detailPage">
         <h2 class="mainTitle">
-            jQuery源码解读
+            jQuery源码部分解读
         </h2>
         <div class="mainContent">
             <p class="describeTit">
@@ -99,6 +99,71 @@
             <p>
                 大部分人使用的都是$('')的形式进行构造，当我们使用这种便捷的方式的时候，其本质上就相当于 new jQuery()，
                 而这种方法在jQuery 内部是如何实现的呢...
+            </p>
+<pre class="layui-code" lay-title="js代码">
+(function(window，undefined) {
+    var
+    //...
+    jQuery = function(selector,context){
+        //实例化方法 jQuery() 实际上是调用了其拓展的原型方法 jQuery.fn.init
+        //即你在调用 $() 的时候jQuery已经自动帮你 new 过了
+        return new jQuery.fn.init(selector,context,rootjQuery);
+    },
+    ...
+    //jQuery.prototype既是jQuery的原型，挂载在上面的方法，即可让所有生成的jQuery对象使用
+    jQuery.fn = jQuery.prototype = {
+        //实例化方法，这个方法可以称作 jQuery 对象构造器
+        init:function(selector,context,rootjQuery){
+            //...
+        }
+    }
+    //最后这是最关键的一部
+    //通过原型链的传递，无论你有没有进行实例化jQuery它都能够准确的访问到对应的方法与属性
+     jQuery.fn.init.prototype = jQuery.fn;
+})(window);
+</pre>
+            <p class="title">
+                jQuery 方法的重载
+            </p>
+            <p>
+                相信用过 jQuery 的都知道 jQuery 的一个方法可以实现多种功能，例如：
+            </p>
+<pre class="layui-code" lay-title="js代码">
+// 获取 id标签上 style 属性的值
+$('#id').attr('style');
+// 设置 id标签上 style属性的值
+$('#id').attr('style','值');
+.
+// 获取 css 某个属性的值
+$('#id').css('width');
+// 设置 css 某个属性的值
+$('#id').css('width','200px');
+</pre>
+            <p>
+                这也算得上是jQuery的一个特色了，虽然这个使得源码阅读起来有点难懂，但不得不说这个功能确实挺好用的，
+                jQuery 一共有着9种不同的方法重载场景：
+            </p>
+<pre class="layui-code" lay-title="js代码">
+// 接受一个字符串，其中包含了用于匹配元素集合的 CSS 选择器
+jQuery([selector,[context]])
+// 传入单个 DOM
+jQuery(element)
+// 传入 DOM 数组
+jQuery(elementArray)
+// 传入 JS 对象
+jQuery(object)
+// 传入 jQuery 对象
+jQuery(jQuery object)
+// 传入原始 HTML 的字符串来创建 DOM 元素
+jQuery(html,[ownerDocument])
+jQuery(html,[attributes])
+// 传入空参数
+jQuery()
+// 绑定一个在 DOM 文档载入完成后执行的函数
+jQuery(callback)
+</pre>
+            <p>
+                <!--我自己的感觉是 jQuery 是一个通用性非常强的框架-->
             </p>
             <p>
                 <a href="http://www.cnblogs.com/coco1s/p/5261646.html" class="mainHref" target="_blank">参考链接</a><br>
