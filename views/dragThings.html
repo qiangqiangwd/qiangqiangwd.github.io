@@ -2,20 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>拖拽事物</title>
-    <!--<link rel="stylesheet" href="../css/index.css">-->
+    <title>拖拽测试</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+    <!--图片放大-->
+    <script src="../pubJs/zooming.min.js" charset="utf-8"></script>
+    <!--图片懒加载-->
+    <script src="../pubJs/EasyLazyload.min.js" charset="utf-8"></script>
 </head>
 <style type="text/css">
     .moveBox{
         width: 100px;
-        /*height: 100px;*/
-        /*background: #333;*/
-        /*position: absolute;*/
-        /*top: 100px;*/
-        /*left: 100px;*/
         color: #333;
-        padding: 15px;
+        /*padding: 15px;*/
         border: 1px solid;
+        background: #fff;
+        position: fixed;
+        left: 90%;
+        top: 50%;
+        z-index: 233;
     }
     .noselect {
         -webkit-touch-callout: none; /* iOS Safari */
@@ -25,74 +33,210 @@
         -ms-user-select: none; /* Internet Explorer/Edge */
         user-select: none; /* Non-prefixed version, currentlynot supported by any browser */
     }
+    .moveBox .title{
+        width: 100%;
+        height: 30px;
+        text-align: center;
+        border-bottom: 1px solid;
+        background: #66ccff;
+        cursor: move;
+    }
+    .moveBox .cnt{
+        padding: 15px;
+    }
 </style>
 <body>
-    <div class="moveBox noselect" id="moveBox">
-        <ol>
-            <li>kk</li>
-            <li>kk</li>
-            <li>kk</li>
-        </ol>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <script type="text/javascript">
-        ;(function(window,undefined){
-            var dragThing = function(elem,opts){
-              return  new dragThing.prototype.init(elem,opts);
-            };
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            拖拽测试
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                用js使得目标能够被拖拽，仿jQuery写法（待完善）
+            </p>
+            <p>
+                这是某天突然想做一个能够被拖拽目录，后面就变成了只做拖拽的效果（我懒~），现在的话拖拽大体已经完成，但后面肯定是要慢慢完善的，
+                现在暂时能够想到的有拖拽的范围限定和拖拽的效果优化...
+            </p>
+<pre class="layui-code" lay-title="代码">
+ ;(function(window,undefined){
+        var dragThing = function(elem,opts){
+            return  new dragThing.prototype.init(elem,opts);
+        };
 
-            dragThing.fn = dragThing.prototype = {
-              init : function(elem,opts){
-                  var opt = opts || {} //获取设定的参数
-                     ,e = this.getId(elem || '') //获取拖拽的对象，id+字符串的形式
-                     ;
+        dragThing.fn = dragThing.prototype = {
+            init : function(elem,opts){
+                var opt = opts || {} //获取设定的参数
+                        ,e = this.getId(elem || '') //获取拖拽的对象，id+字符串的形式
+                        ,move = !!opt.moveE && this.getId(opt.moveE)
+                        ;
 
-                  //检查对象是否存在
-                  if(e){
-                      e.style.position = 'absolute';
-                      //进行操作（点击对象再拖动）
-                      this.mouseEvent(e);
-                  }
-              },
-               //由id获取当前的节点
-              getId : function(elem){
-                  return document.getElementById(elem);
-              },
-              //当鼠标移入时的操作
-              mouseEvent : function(e){
-                    var _this = this,flag = true;
-                  //鼠标点击时
-                  e.onmousedown = function(){
-                      var ele = arguments[0] || window.event
-                           //获取点击时相鼠标对于对象内的坐标
-                           ,x = ele.clientX - this.offsetLeft
-                           ,y = ele.clientY - this.offsetTop;
-                      //鼠标拖动时
-                      this.onmousemove = function(){
-                          var args = arguments[0] || window.event;
-                          //注：clientX为获得鼠标相对于body定位的横标值；
-                          // offsetLeft/获得对象相对于页面的横坐标值
-                          e.style.top = (args.clientY-y)+'px';
-                          e.style.left = (args.clientX-x)+'px';
+                //检查对象是否存在
+                if(e){
+                    move.style.position = 'fixed';
+                    //进行操作（点击对象再拖动）
+                    this.mouseEvent(e,move);
+                }
+            },
+            //由id获取当前的节点
+            getId : function(elem){
+                return document.getElementById(elem);
+            },
+            //当鼠标移入时的操作
+            mouseEvent : function(e,move){
+                var moveE = move || e; //若没有传入要拖动的对象时，默认拖动为其本身
+                //鼠标点击时
+                e.onmousedown = function(){
+                    var ele = arguments[0] || window.event
+                    //获取点击时相鼠标对于对象内的坐标
+                            ,x = ele.clientX - moveE.offsetLeft
+                            ,y = ele.clientY - moveE.offsetTop;
+                    //鼠标拖动时
+                    moveE.onmousemove = function(){
+                        var args = arguments[0] || window.event;
+                        //注：clientX为获得鼠标相对于body定位的横标值；
+                        // offsetLeft/获得对象相对于页面的横坐标值
+                        moveE.style.top = (args.clientY-y)+'px';
+                        moveE.style.left = (args.clientX-x)+'px';
+                    };
+                };
+                //当松开时停止移动
+                e.onmouseup = function(){
+                    moveE.onmousemove = false;
+                };
+                //当离开时停止移动
+                e.onmouseout = function(){
+                    moveE.onmousemove = false;
+                };
+            }
+        };
 
-                      };
-                  };
-                  //当松开时停止移动
-                  e.onmouseup = function(){
-                      this.onmousemove = false;
-                  };
-                  //当离开时停止移动
-                  e.onmouseout = function(){
-                     this.onmousemove = false;
-                  };
-              }
-            };
+        dragThing.fn.init.prototype = dragThing.fn;
+        window.dragThing = dragThing;
+    })(window);
 
-            dragThing.fn.init.prototype = dragThing.fn;
-            window.dragThing = dragThing;
-        })(window);
+    //调用
+    //当前只支持id的字符串
+    //moveBoxT:点击的区域，moveBox:拖拽的整体部分（若无则拖拽moveBoxT）
+    dragThing('moveBoxT',{
+        moveE:'moveBox'
+    });
+</pre>
+        </div>
+    </div>
+</div>
 
-        //调用
-        dragThing('moveBox');
-    </script>
+<div class="moveBox noselect" id="moveBox">
+    <div class="title" id="moveBoxT">
+        <!--目录-->
+    </div>
+    <div class="cnt">
+        这是一个可以拖拽的方块,点击蓝色区域进行拖拽
+    </div>
+</div>
+<script type="text/javascript">
+    ;(function(window,undefined){
+        var dragThing = function(elem,opts){
+            return  new dragThing.prototype.init(elem,opts);
+        };
+
+        dragThing.fn = dragThing.prototype = {
+            init : function(elem,opts){
+                var opt = opts || {} //获取设定的参数
+                        ,e = this.getId(elem || '') //获取拖拽的对象，id+字符串的形式
+                        ,move = !!opt.moveE && this.getId(opt.moveE)
+                        ;
+
+                //检查对象是否存在
+                if(e){
+                    move.style.position = 'fixed';
+                    //进行操作（点击对象再拖动）
+                    this.mouseEvent(e,move);
+                }
+            },
+            //由id获取当前的节点
+            getId : function(elem){
+                return document.getElementById(elem);
+            },
+            //当鼠标移入时的操作
+            mouseEvent : function(e,move){
+                var moveE = move || e; //若没有传入要拖动的对象时，默认拖动为其本身
+                //鼠标点击时
+                e.onmousedown = function(){
+                    var ele = arguments[0] || window.event
+                    //获取点击时相鼠标对于对象内的坐标
+                            ,x = ele.clientX - moveE.offsetLeft
+                            ,y = ele.clientY - moveE.offsetTop;
+                    //鼠标拖动时
+                    moveE.onmousemove = function(){
+                        var args = arguments[0] || window.event;
+                        //注：clientX为获得鼠标相对于body定位的横标值；
+                        // offsetLeft/获得对象相对于页面的横坐标值
+                        moveE.style.top = (args.clientY-y)+'px';
+                        moveE.style.left = (args.clientX-x)+'px';
+                    };
+                };
+                //当松开时停止移动
+                e.onmouseup = function(){
+                    moveE.onmousemove = false;
+                };
+                //当离开时停止移动
+                e.onmouseout = function(){
+                    moveE.onmousemove = false;
+                };
+            }
+        };
+
+        dragThing.fn.init.prototype = dragThing.fn;
+        window.dragThing = dragThing;
+    })(window);
+
+    //调用
+    dragThing('moveBoxT',{
+        moveE:'moveBox',
+        maxTop:''
+    });
+</script>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
 </body>
+<script src="../js/main.js" charset="utf-8"></script>
 </html>
