@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>通过获取当前IP进行定位</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+    .mainContent p {
+        padding-bottom: 0;
+    }
+</style>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            通过获取当前IP进行定位
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                通过获取当前IP进行当前位置的定位
+            </p>
+            <p>
+                最近有个手机网页端的项目要应用到定位，html5本身就有定位的方法，就是HTML5 Geolocation：
+            </p>
+            <p>
+                HTML5 Geolocation API 使用非常简单，基本调用方式如下：　
+            </p>
+<pre class="layui-code" lay-title="代码">
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(locationSuccess, locationError,{
+        // 指示浏览器获取高精度的位置，默认为false
+        enableHighAccuracy: true,
+        // 指定获取地理位置的超时时间，默认不限时，单位为毫秒
+        timeout: 5000,
+        // 最长有效期，在重复获取地理位置时，此参数指定多久再次获取位置。
+        maximumAge: 3000
+    });
+}else{
+    alert("Your browser does not support Geolocation!");
+}
+</pre>
+            <p>
+                locationError为获取位置信息失败的回调函数，可以根据错误类型提示信息：
+            </p>
+<pre class="layui-code" lay-title="代码">
+locationError: function(error){
+    switch(error.code) {
+        case error.TIMEOUT:
+            showError("A timeout occured! Please try again!");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            showError('We can\'t detect your location. Sorry!');
+            break;
+        case error.PERMISSION_DENIED:
+            showError('Please allow geolocation access for this to work.');
+            break;
+        case error.UNKNOWN_ERROR:
+            showError('An unknown error occured!');
+            break;
+    }
+}
+</pre>
+            <p>
+                以及成功获取后的回调函数：
+            </p>
+<pre class="layui-code" lay-title="代码">
+locationSuccess: function(position){
+    var coords = position.coords;
+    var latlng = new google.maps.LatLng(
+        // 维度
+        coords.latitude,
+        // 精度
+        coords.longitude
+    );
+    var myOptions = {
+        // 地图放大倍数
+        zoom: 12,
+        // 地图中心设为指定坐标点
+        center: latlng,
+        // 地图类型
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    // 创建地图并输出到页面
+    var myMap = new google.maps.Map(
+        document.getElementById("map"),myOptions
+    );
+    // 创建标记
+    var marker = new google.maps.Marker({
+        // 标注指定的经纬度坐标点
+        position: latlng,
+        // 指定用于标注的地图
+        map: myMap
+    });
+    //创建标注窗口
+    var infowindow = new google.maps.InfoWindow({
+        content:"您在这里<br/>纬度："+
+            coords.latitude+
+            "<br/>经度："+coords.longitude
+    });
+    //打开标注窗口
+    infowindow.open(myMap,marker);
+}
+</pre>
+            <p>
+                但Geolocation经过测试后发现并没有想象中那么好用，经常定位失败并且定位并不准确（有一次我在深圳给定到北京去了
+                你敢信！），后来为了提高准确性和稳定性，决定采用百度的通过获取用户当前ip进行定位的方法（该方法也存在一定的
+                偏差，但不会太大）
+            </p>
+            <p>
+                首先是获取当前IP的方法：最开始我是通过调取地址的方式获取，
+            </p>
+<pre class="layui-code" lay-title="代码">
+新浪的IP地址查询接口：http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js
+新浪多地域测试方法：http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip=12.130.132.30
+搜狐IP地址查询接口（默认GBK）：http://pv.sohu.com/cityjson
+搜狐IP地址查询接口（可设置编码）：http://pv.sohu.com/cityjson?ie=utf-8
+搜狐另外的IP地址查询接口：http://txt.go.sohu.com/ip/soip
+</pre>
+            <p>
+                但测试发现有时会出现没获取到的现象，所以后来变为通过跨域的jquery代码来实现。
+            </p>
+<pre class="layui-code" lay-title="代码">
+<script language="javascript">
+    jQuery(function ($) {
+        var url = 'http://chaxun.1616.net/s.php?type=ip&output=json&callback=?&_=' + Math.random();
+        $.getJSON(url, function (data) {
+            alert('当前IP：'+data.Ip);//弹出本地ip
+        });
+    });
+</script>
+</pre>
+            <p>
+                获取到当前IP后再通过百度地图的接口方法就可以获取到定位信息了，其中ip为当前ip，ak是可以通过申请获取的密匙
+            </p>
+<pre class="layui-code" lay-title="代码">
+    //根据ip查询当前经纬度（百度地图）
+    $.ajax({
+        url: 'http://api.map.baidu.com/location/ip?ip='+ returnCitySN.cip +'&ak=6BzSCQGBHkueTZBPoRiorBlr9FzjPxnF&coor=bd09ll',
+        type: "POST",
+        dataType:'JSONP',
+        success: function(data){
+            if(data.status == 0){
+                var opts = data.content.point; //当前经纬度
+                var cityName = data.address.split('|')[2]+'市'; //获取当前城市
+            }
+        }
+    });
+</pre>
+            <p>
+                通过IP地址获取当前定位信息的方法还是会有一定的偏差，大概在1~2km左右，好在客户要求也没那么严格，不过以后还想尝试查询
+                下看有没有跟精确的定位。
+            </p>
+        </div>
+    </div>
+</div>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '300px'
+        }); //引用code方法
+    });
+</script>
+</html>
