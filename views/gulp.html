@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>gulp使用</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+
+</style>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            自动化构建工具gulp
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                记录下我所使用自动化构建工具gulp的插件...
+            </p>
+            <p>
+                其结构目录为：
+            </p>
+<pre class="layui-code" lay-title="目录结构">
+       同级目录下：
+       |-dist文件夹
+       |
+       |-node_modules文件夹
+       |
+       |-page文件夹
+       |
+       |-gulpfile.js
+       |
+       |-package.json
+       |
+</pre>
+            <p>
+                其中gulpfile.js的内容为：
+            </p>
+<pre class="layui-code" lay-title="gulpfile.js">
+//----------引用-------------------
+var gulp = require('gulp'), //本地安裝gulp所用到的地方
+     less = require('gulp-less'),  //编译gulp所用的安装包
+     browserSync = require('browser-sync').create(),
+     obfuscate = require('gulp-obfuscate'),  //混淆js
+     uglify = require('gulp-uglify'), //压缩
+    rename = require('gulp-rename'),
+     reload = browserSync.reload, //重载
+    htmlmin = require('gulp-htmlmin') //html文件压缩插件，去除不需要的注释，空格，属性。
+    ;
+     // filter = require('gulp-filter')
+var fileinclude  = require('gulp-file-include'); //首尾分离用js
+<br>
+//---------公共变量（文件夹位置）-----------------
+var inputFile  = 'dist'; //输出的文件夹的位置
+var outputFile  = 'page';  //源文件所在文件夹(本身修改代码的地方)
+<br>
+//---------设定需要的函数--------------
+<br>
+// 静态服务器 + 监听 less/html/js 变化文件
+gulp.task('serve',['less','fileinclude','minifyjs'],function(){
+   browserSync.init({
+      server:'./'+inputFile
+   });
+   gulp.watch('./'+outputFile +'/less/*.less',['less']);  //监控dist文件夹下less的变化，将其输出位css
+   gulp.watch('./'+outputFile +'/**/*.html',['fileinclude']);//监控page文件夹下所有html的变化，在dist文件夹输出
+   gulp.watch('./'+outputFile +'/js/**/*.js',['minifyjs']).on('change',reload);//监控page文件夹下js的变化，在dist文件夹输出(压缩并混淆)，并刷新浏览器
+   gulp.watch('./'+inputFile +'/*.html').on('change',reload);//监控dist文件夹下html的变化，并刷新浏览器
+});
+<br>
+//解析less用js，將其輸出到dist文件夾中
+gulp.task('less',function(){
+   return gulp.src(outputFile +'/less/*.less')  //设定争对的文件
+       .pipe(less())    //该任务调用的模块
+       .pipe(gulp.dest(inputFile +'/css')) //将会在dist/css下生成*.css
+       .pipe(reload({stream:true}));
+});
+<br>
+//首尾分离用js
+gulp.task('fileinclude', function() {
+   // 适配page中所有文件夹下的所有html，排除page下的include文件夹中html
+   gulp.src([outputFile +'/**/*.html','!'+outputFile +'/include/**.html'])
+       .pipe(fileinclude({
+          prefix: '@@',
+          basepath: '@file'
+       }))
+       // .pipe(htmlmin({collapseWhitespace: true})) //压缩html文件
+       .pipe(gulp.dest(inputFile ));
+});
+<br>
+//压缩,合并 js
+gulp.task('minifyjs', function () {
+    return gulp.src(outputFile +'/js/**/*.js')      //需要操作的文件
+        // .pipe(uglify())    //压缩
+        // .pipe(obfuscate()) //混淆
+        // .pipe(rename({suffix: '.min'}))   //rename压缩后的文件名
+        .pipe(gulp.dest(inputFile +'/js'));       //输出到文件夹
+});
+<br>
+//生成公共js
+gulp.task('publicJs', function () {
+    return gulp.src(outputFile +'/publicJs/*.js')      //需要操作的文件
+        .pipe(gulp.dest(inputFile +'/publicJs'));       //输出到文件夹
+});
+<br>
+//将page中的图片加入到dist中
+gulp.task('putImage', function () {
+    gulp.src(outputFile +'/images/*.{png,jpg,gif,ico}')
+        // .pipe(imagemin())
+        .pipe(gulp.dest(inputFile +'/images'));
+});
+<br>
+//定义默认任务
+gulp.task('default',['serve','publicJs','putImage','minifyjs','fileinclude','less']);
+
+</pre>
+            <p>
+                其中package.json的内容为：
+            </p>
+<pre class="layui-code" lay-title="package.json">
+    {
+      "name": "main",
+      "version": "1.0.0",
+      "description": "main ",
+      "main": "gulpfile.js",
+      "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+      },
+      "author": "",
+      "license": "ISC",
+      "devDependencies": {
+        "browser-sync": "^2.17.5",
+        "gulp": "^3.9.1",
+        "gulp-file-include": "^1.1.0",
+        "gulp-htmlmin": "^3.0.0",
+        "gulp-less": "^3.3.0",
+        "gulp-obfuscate": "^0.2.9",
+        "gulp-rename": "^1.2.2",
+        "gulp-uglify": "^2.1.2"
+      }
+    }
+</pre>
+        </div>
+    </div>
+</div>
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: false //是否转义html标签。默认不开启
+            ,height: '600px'
+        }); //引用code方法
+    });
+</script>
+</html>

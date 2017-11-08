@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>formdata</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+
+</style>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            通过使用Formdata ajax上传文件
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                通过使用Formdata ajax上传文件
+            </p>
+            <p>
+                我们公司当前台处理上传文件时直接一个ajax上传base64编码给后台就行了（这里一般采用的FileReader进行获取和添加）
+                ，但最近公司的一个外包项目他们那边的接口要求以文件的二进制流的形式进行上传（就相当于直接的form表单上传），但这里的
+                要求是不能刷新页面，百度了许久，最终发现了可以通过jQuery Ajax使用FormData对象上传文件。
+            </p>
+            <p>
+                FormData对象，是可以使用一系列的键值对来模拟一个完整的表单，然后使用XMLHttpRequest发送这个"表单"，
+                Mozilla Developer上面对于
+                <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/FormData/Using_FormData_Objects">
+                    FormData
+                </a>
+                的使用说明，但这里为了方便所以使用了jQuery Ajax的方式进行FormData对象上传文件。
+            </p>
+            <p class="title">
+                使用&lt;form&gt;表单初始化FormData对象方式上传文件
+            </p>
+<pre class="layui-code" lay-title="HTML代码">
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input id="file" type="file" name="file"/>
+        <button id="upload" type="button">upload</button>
+    </form>
+</pre>
+<pre class="layui-code" lay-title="JS代码">
+    $.ajax({
+        url: '/upload',
+        type: 'POST',
+        cache: false,
+        data: new FormData($('#uploadForm')[0]),
+        processData: false,
+        contentType: false
+    }).done(function(res) {
+    }).fail(function(res) {});
+</pre>
+            <p>
+                这里需要注意的是：<br>
+                processData 设置为 false 。因为 data 值是 FormData 对象，不需要对数据做处理。 <br>
+                &lt;form&gt; 标签添加 enctype="multipart/form-data" 属性。 <br>
+                cache 设置为 false ，上传文件不需要缓存。 <br>
+                contentType 设置为 false 。因为是由&lt;form&gt;表单构造的 FormData 对象，且已经声明了属性 enctype="multipart/form-data" ，所以这里设置为 false 。 <br>
+            </p>
+            <p>
+                上传后，服务器端代码需要使用从查询参数名为file获取文件输入流对象，因为&lt;input&gt;中声明的是name="file"。<br>
+                如果不是用&lt;form&gt;表单构造FormData对象又该怎么做呢？
+            </p>
+            <p class="title">
+                使用&lt;form&gt;对象添加字段方式上传文件
+            </p>
+            <p>当你还有其他字段需要一起上传时就可以使用该方法。</p>
+<pre class="layui-code" lay-title="HTML代码">
+    .
+    <!--这里可以不用添加form表单-->
+    <div id="uploadForm">
+        <input id="file" type="file"/>
+        <button id="upload" type="button">upload</button>
+    </div>
+</pre>
+<pre class="layui-code" lay-title="JS代码">
+    var formData = new FormData();
+    formData.append('file', $('#file')[0].files[0]);
+    formData.append('name', '参数'); //还可以添加其他参数
+    .
+    $.ajax({
+        url: '/upload',
+        type: 'POST',
+        cache: false,
+        data: formData,
+        processData: false,
+        contentType: false
+    }).done(function(res) {
+    }).fail(function(res) {});
+</pre>
+            <p>
+                这里有几处不一样： <br>
+                append() 的第二个参数应是文件对象，即 $('#file')[0].files[0] 。 <br>
+                contentType 也要设置为 ‘false’。 <br>
+            </p>
+            <p>
+                从代码$('#file')[0].files[0]中可以看到一个&lt;input type="file"&gt;标签能够上传多个文件，
+                只需要在&lt;input type="file"&gt;里添加multiple或multiple="multiple"属性。
+            </p>
+            <p>
+                参考：<a target="_blank" href="http://blog.csdn.net/xllily_11/article/details/52330280">JQuery Ajax使用FormData对象上传文件 图片</a>
+            </p>
+        </div>
+    </div>
+</div>
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '400px'
+        }); //引用code方法
+    });
+</script>
+</html>
