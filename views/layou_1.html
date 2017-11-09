@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>布局</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            使用 inline-block 进行布局
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                一直想要丰富自己的布局技巧，然后就看到了使用 inline-block 布局的方法，最近也在实际项目中进行了试用，感觉挺不错的
+                所以想要写篇文章记录下来。参考链接：
+                <a target="_blank" href="http://www.zhangxinxu.com/wordpress/2010/11/%E6%8B%9C%E6%8B%9C%E4%BA%86%E6%B5%AE%E5%8A%A8%E5%B8%83%E5%B1%80-%E5%9F%BA%E4%BA%8Edisplayinline-block%E7%9A%84%E5%88%97%E8%A1%A8%E5%B8%83%E5%B1%80/">
+                    拜拜了,浮动布局-基于display:inline-block的列表布局
+                </a>
+            </p>
+            <p class="title">
+                浮动(float) 布局
+            </p>
+            <p>
+                可能很多前端最开始使用的布局就是浮动布局，所以这里就不多讲，但包裹浮动的父元素一般都要进行清除浮动的操作
+                不然就会造成浮动塌陷，但当在对浮动元素不设置固定高度时，浮动的元素会出现错位的现象
+            </p>
+            <style>
+                .floatBox{
+                    overflow: hidden;
+                    width: 250px;
+                    color: #fff;
+                }
+                .floatBox>div{
+                    float: left;
+                    width: 40px;
+                    background: #00ad80;
+                    margin: 10px;
+                    word-wrap:break-word ;
+                    padding: 5px;
+                }
+                .showTxt1{
+                    margin-top: 90px;
+                    color: red;
+                }
+            </style>
+            <div style="overflow: hidden">
+                <div class="floatBox f-l">
+                    <div>111111111</div>
+                    <div>33333333333333333</div>
+                    <div>22222</div>
+                    <div>444444444</div>
+                    <div>2222</div>
+                    <div>3333333333333333</div>
+                    <div>444444444</div>
+                </div>
+                <div class="f-l showTxt1"><--出现错位了</div>
+            </div>
+            <p class="title">
+                inline-block 布局
+            </p>
+            <p>
+                这里的inline-block 布局就能很好的解决这个问题，下一行会以上一行最高高度为基准
+            </p>
+            <style>
+                .inlineBox{
+                    width: 250px;
+                    color: #fff;
+                }
+                .inlineBox>div{
+                    display: inline-block;
+                    width: 40px;
+                    background: #00ad80;
+                    margin: 10px;
+                    word-wrap:break-word ;
+                    padding: 5px;
+                }
+                .inlineBox2>div{
+                    vertical-align: top;
+                }
+            </style>
+            <div style="overflow: hidden">
+                <div class="inlineBox f-l">
+                    <div>111111111</div>
+                    <div>33333333333333333</div>
+                    <div>22222</div>
+                    <div>444444444</div>
+                    <div>2222</div>
+                    <div>3333333333333333</div>
+                    <div>444444444</div>
+                </div>
+                <div class="f-l showTxt1"><--没有出现错位</div>
+                <div class="inlineBox inlineBox2 f-l">
+                    <div>111111111</div>
+                    <div>33333333333333333</div>
+                    <div>22222</div>
+                    <div>444444444</div>
+                    <div>2222</div>
+                    <div>3333333333333333</div>
+                    <div>444444444</div>
+                </div>
+                <div class="f-l showTxt1"><--可以采用<br>vertical-align: top;使其向上排列</div>
+            </div>
+            <p>
+                这里要提下兼容性的问题，IE6/7不支持 display:inline-block 属性，对于IE8+以及现代浏览器可以直接使用，
+                如果你非要兼容IE6/7的浏览器可以参考下开头的参考链接，张鑫旭大大的文章里有很好的说出解决办法。
+            </p>
+            <p>
+                这里重点要指出的是inline-block会存在的间隙问题，这一般是因为我们在写代码时为了美观一般会进行换行
+                ，而对行级元素来说，一个换行就相当于一个空格
+            </p>
+            <img src="../imgs/layui1.png" alt="">
+            <img src="../imgs/layui2.png" alt="">
+            <p>
+                但为了代码可读性和美观性我们是不可能直接一行写完所有代码的，所以必须的找其他的办法，空格符本质上就是个字符
+                所以用font-size:0;就能很好的解决这个问题。（ps：这个方法也会出现浏览器兼容问题，但那时比较老的版本了，
+                张鑫旭大大的文章里有写，可以看下）
+            </p>
+            <img src="../imgs/layui3.png" alt="">
+            <p class="title">
+                inline-block 的巧用
+            </p>
+            <p>
+                在参考文章中有提及过的，采用了 inline-block 布局后可以采用很多方便的属性，像 white-space:nowrap; 属性，
+                这个好处在于可以不用去计算排列的元素它们的总宽度（以前做轮播包裹浮动元素的父元素就要去计算总宽度，不过后来有
+                方法解决了，不过整体来说还是这个方法更好用）
+            </p>
+            <style>
+                .inlineBox3{
+                    width: 400px;
+                    overflow-x: auto;
+                    white-space:nowrap;
+                    margin: 0 auto 15px;
+                }
+                .inlineBox3>div{
+                    width: 100px;
+                    height: 100px;
+                    display: inline-block;
+                    background: #333;
+                    color: #fff;
+                    text-align: center;
+                    line-height: 100px;
+                    margin: 0 5px;
+                }
+            </style>
+            <div class="inlineBox3" style="font-size: 0">
+                <div>1</div>
+                <div>2</div>
+                <div>3</div>
+                <div>4</div>
+            </div>
+            <p>在不计算元素(行/块级都可以)宽高度的情况下使元素垂直居中：</p>
+            <style>
+                .center1{
+                    width: 600px;
+                    height: 150px;
+                    display: table; /* 主要代码 */
+                    *position: relative;
+                    overflow: hidden;
+                    margin: 0 auto;
+                    border: 1px solid;
+                }
+                .center2{
+                    vertical-align: middle;/* 主要代码 */
+                    display: table-cell;/* 主要代码 */
+                    text-align: center;/* 主要代码 */
+                    *position: absolute;
+                    *top: 50%;
+                    *left: 50%;
+                }
+                .center3{
+                    display: inline-block;/* 主要代码 */
+                    *display: inline;
+                    zoom: 1;
+                    *position: relative;
+                    *top: -50%;
+                    *left: -50%;
+                }
+            </style>
+            <div class="center1">
+                <div class="center2">
+                    <div class="center3">这是一个不知宽高的行/块级元素</div>
+                </div>
+            </div>
+<pre class="layui-code" lay-title="html+css代码">
+            <style>
+                .center1{
+                    width: 600px;
+                    height: 150px;
+                    display: table; /* 主要代码 */
+                    *position: relative;
+                    overflow: hidden;
+                    margin: 0 auto;
+                    border: 1px solid;
+                }
+                .center2{
+                    vertical-align: middle;/* 主要代码 */
+                    display: table-cell;/* 主要代码 */
+                    text-align: center;/* 主要代码 */
+                    *position: absolute;
+                    *top: 50%;
+                    *left: 50%;
+                }
+                .center3{
+                    display: inline-block;/* 主要代码 */
+                    *display: inline;
+                    zoom: 1;
+                    *position: relative;
+                    *top: -50%;
+                    *left: -50%;
+                }
+            </style>
+    <div class="center1">
+        <div class="center2">
+            <div class="center3">这是一个不知宽高的行/块级元素</div>
+        </div>
+    </div>
+</pre>
+            <p><br>
+                <a target="_blank" href="http://www.zhangxinxu.com/wordpress/2016/08/vw-viewport-responsive-layout-typography/">
+                    基于vw等viewport视区单位配合rem响应式排版和布局
+                </a> <br>
+                <a target="_blank" href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">
+                    Flex 布局教程：语法篇
+                </a>
+            </p>
+
+        </div>
+    </div>
+</div>
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '800px'
+        }); //引用code方法
+    });
+</script>
+</html>
