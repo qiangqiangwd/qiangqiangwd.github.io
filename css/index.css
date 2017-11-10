@@ -1,6 +1,6 @@
 
 body,
-div,
+/*div,*/
 dl,
 dt,
 dd,
@@ -30,6 +30,7 @@ td {
     font-family: "microsoft yahei", "宋体", "Arial Narrow";
     font-size: 14px;
 }
+
 h1,h2,h3,h4,h5,h6{
     font-weight: 400;
 }
@@ -517,7 +518,15 @@ body{
 .r-c{
     color: #ff4343 !important;
 }
+.b-c{
+    color: #00F!important;
+}
 
+/*html { font-size: calc(18px + 4 * (100vw - 600px) / 400); }*/
+
+.zhuan::before{
+    background: #00ad80!important;
+}
 
 
 

@@ -54,7 +54,7 @@
             <p class="describeTit">
                 一直想要丰富自己的布局技巧，然后就看到了使用 inline-block 布局的方法，最近也在实际项目中进行了试用，感觉挺不错的
                 所以想要写篇文章记录下来。参考链接：
-                <a target="_blank" href="http://www.zhangxinxu.com/wordpress/2010/11/%E6%8B%9C%E6%8B%9C%E4%BA%86%E6%B5%AE%E5%8A%A8%E5%B8%83%E5%B1%80-%E5%9F%BA%E4%BA%8Edisplayinline-block%E7%9A%84%E5%88%97%E8%A1%A8%E5%B8%83%E5%B1%80/">
+                <a target="_blank" class="b-c" href="http://www.zhangxinxu.com/wordpress/2010/11/%E6%8B%9C%E6%8B%9C%E4%BA%86%E6%B5%AE%E5%8A%A8%E5%B8%83%E5%B1%80-%E5%9F%BA%E4%BA%8Edisplayinline-block%E7%9A%84%E5%88%97%E8%A1%A8%E5%B8%83%E5%B1%80/">
                     拜拜了,浮动布局-基于display:inline-block的列表布局
                 </a>
             </p>
@@ -161,7 +161,7 @@
                 inline-block 的巧用
             </p>
             <p>
-                在参考文章中有提及过的，采用了 inline-block 布局后可以采用很多方便的属性，像 white-space:nowrap; 属性，
+                在参考文章中有提及过的，采用了 inline-block 布局后可以采用很多方便的属性，像 white-space:nowrap; (不换行)属性，
                 这个好处在于可以不用去计算排列的元素它们的总宽度（以前做轮播包裹浮动元素的父元素就要去计算总宽度，不过后来有
                 方法解决了，不过整体来说还是这个方法更好用）
             </p>
@@ -189,7 +189,7 @@
                 <div>3</div>
                 <div>4</div>
             </div>
-            <p>在不计算元素(行/块级都可以)宽高度的情况下使元素垂直居中：</p>
+            <p>在不计算元素(行/块级都可以)宽高度的情况下使元素垂直居中(该方法兼容ie7/8)：</p>
             <style>
                 .center1{
                     width: 600px;
@@ -257,9 +257,7 @@
     </div>
 </pre>
             <p><br>
-                <a target="_blank" href="http://www.zhangxinxu.com/wordpress/2016/08/vw-viewport-responsive-layout-typography/">
-                    基于vw等viewport视区单位配合rem响应式排版和布局
-                </a> <br>
+<br>
                 <a target="_blank" href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">
                     Flex 布局教程：语法篇
                 </a>

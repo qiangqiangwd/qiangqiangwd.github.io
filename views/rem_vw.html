@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>rem_vw</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+    <!--图片放大-->
+    <script src="../pubJs/zooming.min.js" charset="utf-8"></script>
+    <!--图片懒加载-->
+    <script src="../pubJs/EasyLazyload.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+    html {
+        font-size: 16px;
+    }
+
+    @media screen and (min-width: 375px) {
+        html {
+            /* iPhone6的375px尺寸作为16px基准，414px正好18px大小, 600 20px */
+            font-size: calc(100% + 2 * (100vw - 375px) / 39);
+            font-size: calc(16px + 2 * (100vw - 375px) / 39);
+        }
+    }
+    @media screen and (min-width: 414px) {
+        html {
+            /* 414px-1000px每100像素宽字体增加1px(18px-22px) */
+            font-size: calc(112.5% + 4 * (100vw - 414px) / 586);
+            font-size: calc(18px + 4 * (100vw - 414px) / 586);
+        }
+    }
+    @media screen and (min-width: 600px) {
+        html {
+            /* 600px-1000px每100像素宽字体增加1px(20px-24px) */
+            font-size: calc(125% + 4 * (100vw - 600px) / 400);
+            font-size: calc(20px + 4 * (100vw - 600px) / 400);
+        }
+    }
+    @media screen and (min-width: 1000px) {
+        html {
+            /* 1000px往后是每100像素0.5px增加 */
+            font-size: calc(137.5% + 6 * (100vw - 1000px) / 1000);
+            font-size: calc(22px + 6 * (100vw - 1000px) / 1000);
+        }
+    }
+</style>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            利用 vw 和 rem 进行响应式布局
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                随着手机页面的持续火热，能够很好适应页面宽度的布局也越来越重要，这里介绍一篇利用 vw 和 rem 进行响应式布局的方法<br>
+                参考：<a target="_blank" class="b-c" href="http://www.zhangxinxu.com/wordpress/2016/08/vw-viewport-responsive-layout-typography/">
+                    基于vw等viewport视区单位配合rem响应式排版和布局
+                </a>
+            </p>
+            <p class="title">
+               前言
+            </p>
+            <p>
+                首先还记得以前第一次写手机端页面时，因为不是很熟悉布局流程，所以当时单位采用的是 % + px 的单位组合，结果后面在用不同
+                手机进行测试时除了很多的错误，这也间接的影响到我后面对于了解更多布局方式的一点执着...
+            </p>
+            <p>
+                不多说废话，首先我后面手机端第一次选择使用的单位是rem，用js去控制在不同宽度下默认字体大小。
+            </p>
+<pre class="layui-code" lay-title="js控制默认字体大小的代码">
+    //手机端用于字体距离的设定（根据手机屏幕的宽度）
+    (function(doc,win){
+        regsitRemSize(doc,win);
+    })(document,window);
+    //document.documentElement.style.fontSize
+    function regsitRemSize(doc, win) {
+        var docEl = doc.documentElement,
+        //屏幕是否旋转
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+
+        var recalc = function () {
+            var clientWidth = docEl.clientWidth;
+            if (!clientWidth) return;
+            //clientWidth为获取的当前屏幕宽度
+            //字体大小 = 当前屏幕宽度/你自己设置的基数
+            docEl.style.fontSize = 20 * (clientWidth / 375) + 'px';
+            //因为大部分移动端设计图都是按照iphone6的尺寸来设计的
+            //所以这里我选用375为基数，这样我们做页面时就按照iphone6为基准进行调试
+            //在iphone6上1rem等于20px；当设备宽度大于375时，1rem相对应的值会随着变大，反正缩小。
+        };
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    }
+</pre>
+            <p>其实还可以用css去控制默认字体大小</p>
+<pre class="layui-code" lay-title="css控制默认字体大小的代码">
+    html {
+        font-size: 16px;
+    }
+    @media screen and (min-width: 600px) {
+        html {
+            font-size: 18px;
+        }
+    }
+    @media screen and (min-width: 1000px) {
+        html {
+            font-size: 22px;
+        }
+    }
+</pre>
+            <p class="title">
+                结合 vw 和 rem 进行默认字体大小设定
+            </p>
+            <p>
+                先说下 vw 的原理：1vw = 屏幕宽度 / 100 ，另外其实还有 1vh = 屏幕高度 / 100 ， vmin – vw或vh中取小的那个
+                和vmax – vw或vh中取大的那个
+            </p>
+            <p>
+                而 rem 和 em 则是由默认字体大小的单位，前面的js控制可以比较好的控制住单位的计算，但那也需要在宽度变化时进行调用，而前面的css
+                变化则是只在特定的宽度条件下才会进行改变，都不能达到理想的改变，所以结合 vw ，配合CSS3 calc计算就能很好的实现动态字体大小效果。
+            </p>
+<pre class="layui-code" lay-title="css动态改变字体大小的代码">
+    html {
+        font-size: 16px;
+    }
+
+    @media screen and (min-width: 375px) {
+        html {
+            /* iPhone6的375px尺寸作为16px基准，414px正好18px大小, 600 20px */
+            font-size: calc(100% + 2 * (100vw - 375px) / 39);
+            font-size: calc(16px + 2 * (100vw - 375px) / 39);
+        }
+    }
+    @media screen and (min-width: 414px) {
+        html {
+            /* 414px-1000px每100像素宽字体增加1px(18px-22px) */
+            font-size: calc(112.5% + 4 * (100vw - 414px) / 586);
+            font-size: calc(18px + 4 * (100vw - 414px) / 586);
+        }
+    }
+    @media screen and (min-width: 600px) {
+        html {
+            /* 600px-1000px每100像素宽字体增加1px(20px-24px) */
+            font-size: calc(125% + 4 * (100vw - 600px) / 400);
+            font-size: calc(20px + 4 * (100vw - 600px) / 400);
+        }
+    }
+    @media screen and (min-width: 1000px) {
+        html {
+            /* 1000px往后是每100像素0.5px增加 */
+            font-size: calc(137.5% + 6 * (100vw - 1000px) / 1000);
+            font-size: calc(22px + 6 * (100vw - 1000px) / 1000);
+        }
+    }
+</pre>
+
+            <p class="t-c">最后的最后...</p>
+            <style>
+                .ctnBox233{
+                    width: 15rem;
+                    font-size: 0;
+                    margin: 0 auto;
+                }
+                .ctnBox233>div{
+                    display: inline-block;
+                    width: 50%;
+                    vertical-align: middle;
+                    font-size: .7rem;
+                    color: #333;
+                }
+                .ctnBox233>div img{
+                    width: 100%;
+                }
+            </style>
+            <div class="ctnBox233">
+                <div>
+                    <img src="../imgs/collect.jpg" title="舔脚...">
+                </div>
+                <div>
+                    这是一段测试的文字和图片，它会随着屏幕的宽度改变而进行
+                    改变（就相当于一张图片的缩放一样，这样的话，最直观的反应就是这样的手机页面在任意宽度的手机
+                    都能很好的适应）
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: true //是否转义html标签。默认不开启
+            ,height: '600px'
+        }); //引用code方法
+    });
+</script>
+</html>
