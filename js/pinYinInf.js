@@ -1,7 +1,7 @@
 
 (function(){
-    var searchFun = function(cnt,allArr){
-        return new searchFun.prototype.init(cnt,allArr)
+    var searchFun = function(allOpts){
+        return new searchFun.prototype.init(allOpts)
     };
     //将汉字转拼音参数
     var PinYin = {
@@ -409,23 +409,34 @@
     };
 
     searchFun.fn = searchFun.prototype = {
-        init:function(cnt,allArr){
-            if(!cnt || cnt == '') return allArr; //若搜索内容为空或则错误时，返回所有内容
+        init:function(allOpts){
+            var opt = allOpts || {},
+                //搜索的内容
+                cnt = opt.cnt || '',
+                //所有内容总的数组
+                allArr = opt.allArr || [],
+    //返回的类型：0-返回搜索出来的对应字符串(数组形式)，1-返回在总数组中对应的位置(数组形式)，2-返回对应内容和位置(数组形式)
+                rtnType = opt.rtnType || 0
+                ;
+
             var opts = [],//返回的搜寻的结果
-                isChn = this.isChinese(cnt);  //先对要搜索的内容进行判断（是汉字还是拼音）
+                isChn = this.isChinese(cnt)//先对要搜索的内容进行判断（是汉字还是拼音）
+                ;
 
             for(var i = 0;i<allArr.length;i++){
                 if(isChn){
                     //参数是汉字
                     if(allArr[i].indexOf(cnt) != -1){
                         //将匹配到的参数进行赋值
-                        opts.push(allArr[i]);
+                        rtnType == 0 ? opts.push(allArr[i]) :
+                            (rtnType == 1 ? opts.push(i) : opts.push([allArr[i],i]))
                     }
                 }else{
                     //参数是拼音（会将字母转化为小写）时，将所有的数据转换成拼音（小写）的形式，
                     if(this.ConvertPinyin(allArr[i]).indexOf(cnt.toLowerCase()) != -1){
                         //将匹配到的参数进行赋值
-                        opts.push(allArr[i]);
+                        rtnType == 0 ? opts.push(allArr[i]) :
+                            (rtnType == 1 ? opts.push(i) : opts.push([allArr[i],i]))
                     }
                 }
             }

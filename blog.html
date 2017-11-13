@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="css/clock.css">
     <!--layer插件-->
     <!--<link rel="stylesheet" href="pubJs/layui/css/layui.css" />-->
-
     <script src="pubJs/jquery.min.js" charset="utf-8"></script>
+    <!--内容搜索函数-->
+    <script src="js/pinYinInf.js" charset="utf-8"></script>
 </head>
 <body>
 <div class="container">
@@ -52,8 +53,19 @@
                 博客日志
             </h2>
             <div class="listBox">
-                <h3 class="title">
+                <h3 class="title zhuan">
                     <!--<a target="_blank" href="https://qiangqiangwd.github.io/chatRoom/src/">-->
+                    <a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html" target="_blank">
+                        Flex 布局教程
+                    </a>
+                    <span class="f-r date">2017-11-13</span>
+                </h3>
+                <div class="cnt">
+                    转载自 阮一峰 老师的教程，详细的描述了弹性布局的定义和用法...
+                </div>
+            </div>
+            <div class="listBox">
+                <h3 class="title">
                     <a href="views/rem_vw.html">
                         利用 vw 和 rem 进行响应式布局
                     </a>
@@ -65,7 +77,6 @@
             </div>
             <div class="listBox">
                 <h3 class="title">
-                    <!--<a target="_blank" href="https://qiangqiangwd.github.io/chatRoom/src/">-->
                     <a href="views/layou_1.html">
                         使用 inline-block 进行布局
                     </a>
@@ -78,7 +89,6 @@
             </div>
             <div class="listBox">
                 <h3 class="title">
-                    <!--<a target="_blank" href="https://qiangqiangwd.github.io/chatRoom/src/">-->
                     <a href="views/formdata.html">
                         通过使用Formdata ajax上传文件
                     </a>
@@ -90,7 +100,6 @@
             </div>
             <div class="listBox">
                 <h3 class="title">
-                    <!--<a target="_blank" href="https://qiangqiangwd.github.io/chatRoom/src/">-->
                     <a href="views/hanziSearch.html">
                         汉字模糊搜索
                     </a>
@@ -102,7 +111,6 @@
             </div>
             <div class="listBox">
                 <h3 class="title">
-                    <!--<a target="_blank" href="https://qiangqiangwd.github.io/chatRoom/src/">-->
                     <a href="views/getIpNow.html">
                         通过获取当前IP进行定位
                     </a>
@@ -114,7 +122,6 @@
             </div>
             <div class="listBox">
                 <h3 class="title">
-                    <!--<a target="_blank" href="https://qiangqiangwd.github.io/chatRoom/src/">-->
                     <a href="views/protoLink.html">
                         原型链prototype与__proto__的区别和关系
                     </a>
@@ -172,11 +179,34 @@
                 </div>
             </div>
             <div class="listBox">
+                <h3 class="title zhuan">
+                    <a href="http://es6.ruanyifeng.com/#README" target="_blank">
+                        ECMAScript 6 入门
+                    </a>
+                    <span class="f-r date">2017-6-30</span>
+                </h3>
+                <div class="cnt">
+                    通过获取当前IP进行当前位置的定位
+                </div>
+            </div>
+            <!--<div class="listBox">-->
+                <!--<h3 class="title">-->
+                    <!--<a href="views/rem_vw.html">-->
+                        <!--正则表达式-->
+                    <!--</a>-->
+                    <!--<span class="f-r date">2017-5-17</span>-->
+                <!--</h3>-->
+                <!--<div class="cnt">-->
+                    <!--正则表达式(regular expression)描述了一种字符串匹配的模式（pattern），-->
+                    <!--可以用来检查一个串是否含有某种子串、将匹配的子串替换或者从某个串中取出符合某个条件的子串等。-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="listBox">
                 <h3 class="title">
                     <a href="views/jQueryRead.html">
                         jQuery源码部分解读
                     </a>
-                    <span class="f-r date">2017-6-22</span>
+                    <span class="f-r date">2017-5-5</span>
                 </h3>
                 <div class="cnt">
                     jQuery作为我工作中最常用的JavaScript框架，虽然用法上能够很好的掌握
@@ -189,7 +219,7 @@
                     <a href="views/cssWave.html">
                         纯css实现波浪效果
                     </a>
-                    <span class="f-r date">2017-7-25</span>
+                    <span class="f-r date">2017-4-13</span>
                 </h3>
                 <div class="cnt">
                     采用css3中的动画使两个近似圆形并相互重叠的容器进行旋转(其中一个容器进行了一些角度的旋转)，
@@ -273,8 +303,8 @@
     <div class="leftCnt f-l">
         <!--搜索部分-->
         <div>
-            <input type="text" placeholder="搜索" class="mainInput">
-            <a href="#" class="mainBtn2">搜索</a>
+            <input type="text" placeholder="搜索" id="searchTxt" class="mainInput">
+            <a id="searchBtn" class="mainBtn2">搜索</a>
         </div>
         <!--3D时钟-->
         <div class="t-c thisCntBox" title="3D时钟">
@@ -425,6 +455,32 @@
             $(listNum[i]).attr('data-num', arr[i]);
         });
     }
+
+    //搜索功能
+    ;(function(){
+        var allArr = [],RtnArr = [];
+
+        $('.listBox .title a').each(function(i){
+            allArr.push($(this).text().trim()); //获取总的内容
+        });
+
+        $('#searchBtn').click(function(){
+            RtnArr = searchFun({
+                cnt:$('#searchTxt').val(),
+                allArr : allArr,
+                rtnType : 1
+            }); //搜索内容，所有内容
+
+            //先隐藏所有
+            $('.listBox').each(function(i){
+                $(this).hide();
+            });
+            //在显示想要显示的
+            $.each(RtnArr,function(i){
+                $('.listBox').eq(RtnArr[i]).show();
+            });
+        });
+    })();
 </script>
 </body>
 </html>

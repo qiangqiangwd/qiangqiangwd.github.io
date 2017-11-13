@@ -18,8 +18,8 @@ function rT(e){
     var st = document.body.scrollTop ,time;
     if($(e).attr('move') !== 'true' && st>0){
         $(e).attr('move','true');//添加正在进行中的标识，防止重复点击
-        time= setInterval(function(){
-            document.body.scrollTop -= 30;
+        time = setInterval(function(){
+            document.body.scrollTop -= 40;
             //有两种情况下会停止，向下滚动滚动条和到达顶部时
             if(st<=10 || st<document.body.scrollTop){
                 clearInterval(time);
