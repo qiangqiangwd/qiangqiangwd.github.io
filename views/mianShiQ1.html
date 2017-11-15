@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>面试题</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+
+</style>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            一道面试题引发的思考
+        </h2>
+        <div class="mainContent">
+            <p class="describeTit">
+                这是网上搜到的一道关于js面试题，自己测了下才发现原来自己还有这么多东西没有掌握到，所以写下这篇文章记录下来
+            </p>
+            <p>
+                首先看下原题：
+            </p>
+<pre class="layui-code" lay-title="js">
+    function Foo(){
+        getName = function(){alert(1); }
+        return this;
+    }
+    Foo.getName = function(){alert(2); }
+    Foo.prototype.getName = function () { alert(3); }
+    var getName = function () { alert(4); }
+    function getName () { alert(5); }
+
+    //依次写出弹出的答案
+    Foo.getName();  //2
+    getName();   //4
+    Foo().getName();  //1
+    getName(); //1
+    new Foo.getName();  //2
+    new Foo().getName(); //3
+    new new Foo().getName(); //3
+</pre>
+            <p>
+                首先这道题的答案分别为  2、4、1、1、2、3、3 ，第一题应该没啥问题，我们直接从第二题开始解析。
+            </p>
+            <p class="title">
+                第二问解答
+            </p>
+            <p>
+                这里主要考的是变量和函数的声明相关问题，首先变量的声明就有前置性
+            </p>
+<pre class="layui-code">
+console.log(a)  // 3
+var a = 3
+console.log(a)  // 3
+</pre>
+            <p>
+                在这里 var getName 与 function getName 都是声明语句，区别在于 var getName 是函数表达式，
+                而 function getName 是函数声明。再碰到这种情况下 js 会进行拆分执行
+            </p>
+<pre class="layui-code">
+console.log(a)   //function a(){}
+var a = 1;
+function a(){}
+console.log(a) // 1
+</pre>
+            <p>将上述情况进行拆分,其中var a;和function a(){}放到最上面a=1放到下方，变为：</p>
+<pre class="layui-code">
+var a;
+function a(){}
+console.log(a)   //function a(){}
+a = 1
+console.log(a) // 1
+</pre>
+            <p>在和原题进行比较就可以得出弹出的值为2。</p>
+            <p class="title">
+                第三问解答
+            </p>
+            <p>
+                这里依据执行顺序，先执行Foo函数，根据Foo的返回值调用返回对象的getName属性函数。
+            </p>
+            <p>
+                首先函数Foo第一句执行的是  getName = function () { alert (1); } 这是一个没有var声明的 getName 变量，
+                函数内并没有对此进行声明，但注意在下面已经有对 getName 进行过声明，此时就像于执行变量的赋值，getName 变成了 function () { alert (1); }
+                而Foo第二句的return this 中 this 指向 window ，相反如果是在 new Foo() 的情况下 this 指向的是本身的实例化对象，
+                所以综上所述 window.getName() 弹出值肯定为1
+            </p>
+            <p class="title">
+                第四问解答
+            </p>
+            <p>由第三题可以知道，在执行了 Foo().getName(); 后，变量 getName 发生了改变，所以弹出值为 1 。</p>
+            <p class="title">
+                第五问解答
+            </p>
+            <p>
+                这里考察的是运算符的优先级问题：
+            </p>
+            <div class="t-c">
+                <img src="../imgs/js1.jpg" alt="">
+                <img src="../imgs/js2.jpg" alt="">
+            </div>
+            <p>
+                由图可知 . 的优先级是要高于 new 的，所以正确的执行顺序为 new (Foo.getName)() 所以这里弹出 2。
+            </p>
+            <p class="title">
+                第六问解答
+            </p>
+            <p>
+                这里的运算符优先级括号高于 new ，所以实际执行为 (new Foo()).getName()，在第三题也提到过 this 的返回值问题
+                这里在进行实例化时返回应遵守：
+            </p>
+<pre class="layui-code">
+//1、没有返回值则按照其他语言一样返回实例化对象。
+
+    > function F(){}
+    < undefined
+    > new F()
+    < F {}
+
+//2、若有返回值则检查其返回值是否为引用类型。如果是非引用类型，如基本类型（string,number,boolean,null,undefined）则与无返回值相同，实际返回其实例化对象。
+
+    > function F(){return 1; }
+    < undefined
+    > new F()
+    < F {}
+
+//3、若返回值是引用类型，则实际返回值为这个引用类型。
+
+    > function F(){return {b:5}; }
+    < undefined
+    > new F()
+    < Object {b:5}
+
+</pre>
+            <p>
+                所以这里的返回值为其实例化对象，而 Foo 函数本身没有添加任何 getName 属性（例如函数内部有 this.getName = ...），
+                所以只能通过 原型对象（prototype）进行寻找，故最终弹出 3。
+            </p>
+            <p class="title">
+                第七问解答
+            </p>
+            <p>
+                同样的优先级处理，其执行顺序为：new (( new Foo() ).getName )(); ,相当于 new (function () { alert(3); })()，
+                所以最终还是弹出 3。
+            </p>
+            <p class="title">
+                总结
+            </p>
+            <p>
+                到现在才感觉到自己对 js 的基础还是不够熟悉，以后还应该在多看多去记住这些基本的东西。
+            </p>
+        </div>
+    </div>
+</div>
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<!--<script type="text/javascript">-->
+    <!--layui.use('code', function(){ //加载code模块-->
+        <!--layui.code({-->
+            <!--encode: false //是否转义html标签。默认不开启-->
+            <!--,height: '600px'-->
+        <!--}); //引用code方法-->
+    <!--});-->
+<!--</script>-->
+</html>
