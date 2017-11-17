@@ -182,7 +182,15 @@
                 //检查对象是否存在
                 if(e){
                     move.style.position = 'fixed';
-                    //进行操作（点击对象再拖动）
+                    move.style.zIndex = '999';
+
+//                    //创造一个遮罩面板防止拖动时会选中文字
+//                    var node=document.createElement("div");
+//                    node.setAttribute('id', 'do_not_select');
+//                    document.getElementsByTagName('body')[0].appendChild(node);
+//                    //给遮罩面板设置样式，使其覆盖全屏幕
+//                    this.setStyle(this.getId('do_not_select'),{position:'fixed',top:'0',bottom:'0',left:'0',right:'0',zIndex:'666',display:'none'});
+                    //进行操作（点击对象再拖动
                     this.mouseEvent(e,move);
                 }
             },
@@ -190,15 +198,26 @@
             getId : function(elem){
                 return document.getElementById(elem);
             },
+//            //循环设置样式
+//            setStyle:function(e,opt){
+//                for(name in opt){
+//                    e.style[name] = opt[name];
+//                }
+//            },
             //当鼠标移入时的操作
             mouseEvent : function(e,move){
-                var moveE = move || e; //若没有传入要拖动的对象时，默认拖动为其本身
+                var moveE = move || e //若没有传入要拖动的对象时，默认拖动为其本身
+                     ,_this = this
+                        ;
                 //鼠标点击时
                 e.onmousedown = function(){
                     var ele = arguments[0] || window.event
                     //获取点击时相鼠标对于对象内的坐标
                             ,x = ele.clientX - moveE.offsetLeft
                             ,y = ele.clientY - moveE.offsetTop;
+
+                    //显示遮罩层
+//                    _this.setStyle(_this.getId('do_not_select'),{display:'block'});
                     //鼠标拖动时
                     moveE.onmousemove = function(){
                         var args = arguments[0] || window.event;
@@ -211,10 +230,12 @@
                 //当松开时停止移动
                 e.onmouseup = function(){
                     moveE.onmousemove = false;
+//                    _this.setStyle(_this.getId('do_not_select'),{display:'none'});
                 };
                 //当离开时停止移动
                 e.onmouseout = function(){
                     moveE.onmousemove = false;
+//                    _this.setStyle(_this.getId('do_not_select'),{display:'none'});
                 };
             }
         };

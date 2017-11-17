@@ -463,6 +463,7 @@ body{
     color: #333;
     margin: 5px;
     padding: 10px;
+    word-wrap : break-word ;
 }
 .essaysBox .cnt ul li .ml{
     margin-left: 15px;
