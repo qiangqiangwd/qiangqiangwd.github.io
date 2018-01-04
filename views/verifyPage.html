@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>验证</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <!--layer插件-->
+    <link rel="stylesheet" href="../pubJs/layui/css/layui.css" />
+    <script src="../pubJs/layui/layui.js" charset="utf-8"></script>
+    <script src="../pubJs/jquery.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+
+</style>
+<body>
+<div class="container">
+    <!--导航-->
+    <div id="nav">
+        <div class="w1100 clearfix">
+            <h1 class="logo f-l">
+                <a href="../index.html">
+                    <img src="../imgs/logo.png" alt="">
+                </a>
+            </h1>
+            <ul class="clearfix">
+                <li>
+                    <a href="../index.html">
+                        首页
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../blog.html" class="sel">
+                        博客日志
+                        <span class="line"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../essays-js.html">
+                        随笔
+                        <span class="line"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="showCnt clearfix">
+    <div class="goBack">
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+    <div class="detailPage">
+        <h2 class="mainTitle">
+            验证
+        </h2>
+        <div class="mainContent">
+            <form action="" id="form">
+                <label for="phone">
+                    手机号
+                    <input type="text" placeholder="手机号" id="phone" cq-verify="phone">
+                </label>
+                <label for="email">
+                    邮箱
+                    <input type="text" placeholder="手机号" id="email">
+                </label>
+            </form>
+        </div>
+    </div>
+</div>
+<a class="returnTop" id="returnTop" onclick="rT($('#returnTop'))">
+    返回顶部
+</a>
+</body>
+<script src="../js/main.js" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use('code', function(){ //加载code模块
+        layui.code({
+            encode: false //是否转义html标签。默认不开启
+            ,height: '600px'
+        }); //引用code方法
+    });
+
+    {
+        class $verify{
+
+        }
+    }
+</script>
+</html>
