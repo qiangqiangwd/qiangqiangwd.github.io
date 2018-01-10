@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="pubJs/jquery.min.js"></script>
+</head>
+<body>
+<div id="cnt">
+    内容...
+</div>
+<button id="btn">发起一个请求！</button>
+<script type="text/javascript">
+    $('#btn').click(function(){
+        $.ajax({
+            type : 'get',
+            url :  '/php/test.php',
+            // data : opts.data,
+            success : function(data){
+                $('#cnt').text(data);
+            }
+        });
+    });
+</script>
+</body>
+</html>

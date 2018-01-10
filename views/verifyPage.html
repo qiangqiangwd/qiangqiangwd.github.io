@@ -54,7 +54,7 @@
             验证
         </h2>
         <div class="mainContent">
-            <form action="" id="form">
+            <form action="" id="form" filter="$verify">
                 <label for="phone">
                     手机号
                     <input type="text" placeholder="手机号" id="phone" cq-verify="phone">
@@ -80,10 +80,22 @@
         }); //引用code方法
     });
 
-    {
-        class $verify{
+    class $verify{
+        constructor(opts){
+            return this.init();
+        };
 
-        }
+        init(){
+            let form = document.getElementsByTagName('form');
+
+            // form.forEach((item,index)=>{
+            //     console.log(item);
+            //     console.log(index);
+            // });
+        };
+
     }
+
+    new $verify();
 </script>
 </html>
